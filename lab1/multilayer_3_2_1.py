@@ -46,8 +46,9 @@ def runNN():
 
     # Wj = weights at layer j
     # Wk = weights at layer k
+    # Wkj has a + 1 to reflect the weights associated with the bias
     Wji = p1.initializeWeights(X.shape[0], n_hidden)
-    Wkj = p1.initializeWeights(n_hidden, 1)
+    Wkj = p1.initializeWeights(n_hidden + 1, 1)
 
     losses = []
 
@@ -59,8 +60,9 @@ def runNN():
         # Hj_out = output at layer j
         # Yk= output at layer k
         Hj_in = p1.forwardPass(Wji,X)
-        Hj_out = vsigmoid(Hj_in)
-        Hj_phid = vd_sigmoid(Hj_in)
+        Hj_bias = np.ones(Hj_in.shape[1])
+        Hj_out = np.vstack([vsigmoid(Hj_in),Hj_bias])
+        Hj_phid = np.vstack([vd_sigmoid(Hj_in),Hj_bias])
 
         Yk_in = p1.forwardPass(Wkj,Hj_out)
         Yk_out= vsigmoid(Yk_in)
@@ -76,7 +78,7 @@ def runNN():
         DELTA_Wkj = DELTA(eta, d_k, Hj_out)
 
         d_j = dHidden(d_k, Wkj, Hj_phid)
-        DELTA_Wji = DELTA(eta, d_j, X)
+        DELTA_Wji = DELTA(eta, d_j, X)[:-1,:]
 
         Wji = Wji + DELTA_Wji
         Wkj = Wkj + DELTA_Wkj
