@@ -20,7 +20,7 @@ def initializeWeights(input_dim, output_dim):
     """
     Returns a weight matrix with standard normal initialization
     """
-    return np.random.randn(output_dim, input_dim)
+    return np.random.randn(output_dim, input_dim)      
 
 def forwardPass(W, x):
     return np.matmul(W, x)
@@ -33,11 +33,7 @@ def decisionBoundary(x, normal):
     # y = (-w0x - w2) / w1
     return (-normal[:,0] * x - normal[:,2]) / normal[:,1]
 
-if __name__ == "__main__":
-
-    # mode 0 = perceptron
-    # mode 1 = delta rule
-    mode = 1
+def main():
 
     eta = 0.01
 
@@ -65,7 +61,11 @@ if __name__ == "__main__":
 
     W = initializeWeights(X.shape[0], 1)
 
-    plt.ion()
+    # plt.ion()
+
+    e_last = 0
+
+    losses = []
 
     for epoch in range(100):
 
@@ -75,23 +75,26 @@ if __name__ == "__main__":
             T_sample = np.atleast_2d(T[i])
         
             WX = forwardPass(W, X_sample)
-            Y = np.sign(WX)
-
-            # Delta Learning
-            e = error(T_sample, WX)
 
             dW = -eta * np.matmul(np.atleast_2d(WX - T_sample), np.transpose(X_sample))
 
             W = W + dW
 
-            # Plot training points
-            if i % 20 == 0:
-                print(f"Epoch: {epoch}\nDelta error: {e}")
-                plt.clf()
-                plt.ylim(minY,maxY)
-                plt.xlim(minX,maxX)
-                plt.plot(A[0], A[1], "ro", B[0], B[1], "bo")
-                plt.plot(__x, decisionBoundary(__x, W))
-                plt.show()
+        # Quickly calculate total loss for use in learning curve
+        WX = forwardPass(W, X)
+        e = error(T, WX)
+        losses.append(e)
+        
+        if abs(e - e_last) < 10**-6:
+            break
 
-        plt.pause(0.001)
+        e_last = e
+    
+    return losses
+
+if __name__ == "__main__":
+        print (np.mean([len(main()) for i in range(20)]))
+        # losses = main()
+        # print (losses)
+        # import utility
+        # utility.plotLearningCurve(losses)
