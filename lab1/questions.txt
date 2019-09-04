@@ -1,7 +1,7 @@
 1. Apply and compare perceptron learning with the Delta learning rule in batch mode on the generated dataset. Adjust the learning rate and study the convergence of the two algorithms.
 
 Perceptron learning rule stops as soon as all the training data is classified correctly. The decision boundary will often lie very close and even on top of some points.
-Delta learning rule doesn't stop, the error just decreases by miniscule amounts after convergence. The decision boundary is intuitively much "cleaner" and farther away from the data points.
+Delta learning rule doesn't stop, the error just decreases by miniscule amounts after convergence. We can then define convergence as dW -> 0. The decision boundary is intuitively much "cleaner" and farther away from the data points.
 The Perceptron rule responds better to a larger learning rate (eta) 0.1, while the delta rule diverges with this learning rate. The delta rule only converges with eta < 0.001, otherwise it diverges.
 
 2. Compare sequential with a batch learning approach for the Delta rule. How quickly (in terms of epochs) do the algorithms converge? Please ad- just the learning rate and plot the learning curves for each variant. Bear in mind that for sequential learning you should not use the matrix form of the learning rule discussed in section 2.2 and instead perform updates iteratively for each sample. How sensitive is learning to random initialisa- tion?

@@ -37,7 +37,7 @@ if __name__ == "__main__":
     # mode 1 = delta rule
     mode = 1
 
-    eta = 0.001
+    eta = 0.00001
 
     # Training Data sets A and B
     mA, sigmaA = [1.0, 0.5], 0.5
@@ -61,39 +61,34 @@ if __name__ == "__main__":
     T_A, T_B = np.ones(A.shape[1]), -1 * np.ones(A.shape[1])
     T = np.hstack([T_A, T_B])
 
-    for mode in range(0,1):
+    W = initializeWeights(X.shape[0], 1)
 
-        W = initializeWeights(X.shape[0], 1)
+    plt.ion()
 
-        plt.ion()
+    e_last = 0
 
-        e_last = 0
+    for epoch in range(500):
 
-        for epoch in range(500):
-            
-            WX = forwardPass(W, X)
+        for i in range(len(T)):
+
+            X_sample = np.atleast_2d(X[:, i])
+            T_sample = T[i]
+            print (T_sample, X_sample.shape)
+        
+            WX = forwardPass(W, X_sample)
             Y = np.sign(WX)
 
-            # Perceptron Learning
-            if mode == 0:
-                e = error(T, Y)
-                # print (Y)
-                print(f"Epoch: {epoch}\nPerceptron error: {e}")
-                if e == 0:
-                    # Stop when no more mistakes
-                    break
-                
-                dW = -eta * np.matmul((Y - T), np.transpose(X))
-
             # Delta Learning
-            if mode == 1:
-                e = error(T, WX)
-                print(f"Epoch: {epoch}\nDelta error: {e}")
-                # if abs(e - e_last) < 10**-5:
-                    # break
-                e_last = e
-                dW = -eta * np.matmul((WX - T), np.transpose(X))
-                print (dW)
+            e = error(T_sample, WX)
+
+            print (T_sample.shape, WX.shape)
+            print(f"Epoch: {epoch}\nDelta error: {e}")
+            # if abs(e - e_last) < 10**-5:
+                # break
+            e_last = e
+
+            print (np.atleast_2d(WX - T_sample))
+            dW = -eta * np.matmul(np.atleast_2d(WX - T_sample), X_sample)
 
             W = W + dW
 
@@ -104,6 +99,6 @@ if __name__ == "__main__":
             plt.plot(A[0], A[1], "ro", B[0], B[1], "bo")
             plt.plot(__x, decisionBoundary(__x, W))
             plt.show()
-            plt.pause(0.001)
 
-        input()
+        plt.pause(0.001)
+        # input()
