@@ -5,11 +5,11 @@ import nonlinear_exploration_3_1_3 as p313
 import math
 
 def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+    return (2 / (1 + np.exp(-x))) - 1
     # return (1 - math.e**(-x))/(1 + math.e **(-x))
 
 def d_sigmoid(x):
-    return sigmoid(x) * (1-sigmoid(x))
+    return (1+sigmoid(x)) * (1-sigmoid(x)) / 2
 
 def dFinal(t, o, phi_final):
     return (o - t) * phi_final
@@ -20,12 +20,7 @@ def dHidden(d_next, w_layer, phi_hidden):
 def DELTA(eta, d, X):
     return -eta * np.matmul(d, np.transpose(X))
 
-if __name__ == "__main__":
-
-    sig = sigmoid(np.array([0,1,2,3,100,-100]))
-    d_sig = sig * (1 - sig)
-    print (sig, d_sig)
-    exit()
+def runNN():
 
     eta = 0.001
     ndata = 100
@@ -54,8 +49,10 @@ if __name__ == "__main__":
     Wji = p1.initializeWeights(X.shape[0], n_hidden)
     Wkj = p1.initializeWeights(n_hidden, 1)
 
+    losses = []
+
 #    for _ in range(ndata):
-    for _ in range(1):
+    for epoch in range(100):
 
         # forward pass
         # Hj_in = input to layer J
@@ -70,8 +67,9 @@ if __name__ == "__main__":
         Yk_phid = vd_sigmoid(Yk_in)
 
         error = p1.error(T, Yk_out)
+        losses.append(error)
 
-        print (f"Error: {error}")
+        print(f"Epoch: {epoch}\nError: {error}")
 
         eta = 0.001
         d_k = dFinal(T, Yk_out, Yk_phid)
@@ -82,3 +80,11 @@ if __name__ == "__main__":
 
         Wji = Wji + DELTA_Wji
         Wkj = Wkj + DELTA_Wkj
+
+    print (Yk_out)
+
+    return losses
+
+if __name__ == "__main__":
+    import utility
+    utility.plotLearningCurve(runNN())

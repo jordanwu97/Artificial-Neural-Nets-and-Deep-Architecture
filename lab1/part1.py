@@ -31,7 +31,7 @@ def decisionBoundary(x, normal):
     return (-normal[:,0] * x - normal[:,2]) / normal[:,1]
     # return (-normal[:,0] * x) / normal[:,1]
 
-if __name__ == "__main__":
+def main():
 
     # mode 0 = perceptron
     # mode 1 = delta rule
@@ -61,49 +61,54 @@ if __name__ == "__main__":
     T_A, T_B = np.ones(A.shape[1]), -1 * np.ones(A.shape[1])
     T = np.hstack([T_A, T_B])
 
-    for mode in range(0,1):
 
-        W = initializeWeights(X.shape[0], 1)
+    W = initializeWeights(X.shape[0], 1)
 
-        plt.ion()
+    e_last = 0
+    losses = []
 
-        e_last = 0
+    for epoch in range(500):
+        
+        WX = forwardPass(W, X)
+        Y = np.sign(WX)
 
-        for epoch in range(500):
+        # Perceptron Learning
+        if mode == 0:
+            e = error(T, Y)
+            losses.append(e)
+            # print (Y)
+            print(f"Epoch: {epoch}\nPerceptron error: {e}")
+            if e == 0:
+                # Stop when no more mistakes
+                break
             
-            WX = forwardPass(W, X)
-            Y = np.sign(WX)
+            dW = -eta * np.matmul((Y - T), np.transpose(X))
 
-            # Perceptron Learning
-            if mode == 0:
-                e = error(T, Y)
-                # print (Y)
-                print(f"Epoch: {epoch}\nPerceptron error: {e}")
-                if e == 0:
-                    # Stop when no more mistakes
-                    break
-                
-                dW = -eta * np.matmul((Y - T), np.transpose(X))
+        # Delta Learning
+        if mode == 1:
+            e = error(T, WX)
+            losses.append(e)
+            # print(f"Epoch: {epoch}\nDelta error: {e}")
+            if abs(e - e_last) < 10**-6:
+                break
+            e_last = e
+            dW = -eta * np.matmul((WX - T), np.transpose(X))
 
-            # Delta Learning
-            if mode == 1:
-                e = error(T, WX)
-                print(f"Epoch: {epoch}\nDelta error: {e}")
-                # if abs(e - e_last) < 10**-5:
-                    # break
-                e_last = e
-                dW = -eta * np.matmul((WX - T), np.transpose(X))
-                print (dW)
+        W = W + dW
 
-            W = W + dW
+        # Plot training points
+        # plt.clf()
+        # plt.ylim(minY,maxY)
+        # plt.xlim(minX,maxX)
+        # plt.plot(A[0], A[1], "ro", B[0], B[1], "bo")
+        # plt.plot(__x, decisionBoundary(__x, W))
+        # plt.show()
+        # plt.pause(0.001)
+    
+    return losses
 
-            # Plot training points
-            plt.clf()
-            plt.ylim(minY,maxY)
-            plt.xlim(minX,maxX)
-            plt.plot(A[0], A[1], "ro", B[0], B[1], "bo")
-            plt.plot(__x, decisionBoundary(__x, W))
-            plt.show()
-            plt.pause(0.001)
-
-        input()
+if __name__ == "__main__":
+        # print (np.mean([main() for i in range(20)]))
+    losses = main()
+    import utility
+    utility.plotLearningCurve(losses)
