@@ -17,6 +17,9 @@ def generateData(features, mean, sigma, n):
 
 
 def initializeWeights(input_dim, output_dim):
+    """
+    Returns a weight matrix with standard normal initialization
+    """
     return np.random.randn(output_dim, input_dim)
 
 def forwardPass(W, x):
@@ -29,7 +32,6 @@ def decisionBoundary(x, normal):
     # 0 = w0x + w1y + w2
     # y = (-w0x - w2) / w1
     return (-normal[:,0] * x - normal[:,2]) / normal[:,1]
-    # return (-normal[:,0] * x) / normal[:,1]
 
 if __name__ == "__main__":
 
@@ -37,7 +39,7 @@ if __name__ == "__main__":
     # mode 1 = delta rule
     mode = 1
 
-    eta = 0.00001
+    eta = 0.01
 
     # Training Data sets A and B
     mA, sigmaA = [1.0, 0.5], 0.5
@@ -65,15 +67,12 @@ if __name__ == "__main__":
 
     plt.ion()
 
-    e_last = 0
-
-    for epoch in range(500):
+    for epoch in range(100):
 
         for i in range(len(T)):
 
-            X_sample = np.atleast_2d(X[:, i])
-            T_sample = T[i]
-            print (T_sample, X_sample.shape)
+            X_sample = np.transpose(np.atleast_2d(X[:, i]))
+            T_sample = np.atleast_2d(T[i])
         
             WX = forwardPass(W, X_sample)
             Y = np.sign(WX)
@@ -81,24 +80,18 @@ if __name__ == "__main__":
             # Delta Learning
             e = error(T_sample, WX)
 
-            print (T_sample.shape, WX.shape)
-            print(f"Epoch: {epoch}\nDelta error: {e}")
-            # if abs(e - e_last) < 10**-5:
-                # break
-            e_last = e
-
-            print (np.atleast_2d(WX - T_sample))
-            dW = -eta * np.matmul(np.atleast_2d(WX - T_sample), X_sample)
+            dW = -eta * np.matmul(np.atleast_2d(WX - T_sample), np.transpose(X_sample))
 
             W = W + dW
 
             # Plot training points
-            plt.clf()
-            plt.ylim(minY,maxY)
-            plt.xlim(minX,maxX)
-            plt.plot(A[0], A[1], "ro", B[0], B[1], "bo")
-            plt.plot(__x, decisionBoundary(__x, W))
-            plt.show()
+            if i % 20 == 0:
+                print(f"Epoch: {epoch}\nDelta error: {e}")
+                plt.clf()
+                plt.ylim(minY,maxY)
+                plt.xlim(minX,maxX)
+                plt.plot(A[0], A[1], "ro", B[0], B[1], "bo")
+                plt.plot(__x, decisionBoundary(__x, W))
+                plt.show()
 
         plt.pause(0.001)
-        # input()
