@@ -33,9 +33,14 @@ def runNN():
     # Training Data sets A and B
     mA, sigmaA = [1.0, 0.5], 0.5
     mB, sigmaB = [-2.0, 0.0], 0.5
+    mC, sigmaC = [5, 0.0], 0.5
 
+    ## Really quick just added a second set C to check this actually works on lin non-seperable.
+    ## @Bryan please plug in the correct data set
     A = p1.generateData(2, mA, sigmaA, 100)
     B = p1.generateData(2, mB, sigmaB, 100)
+    C = p1.generateData(2, mC, sigmaC, 100)
+    B = np.hstack([B,C])
     X = np.hstack([A, B])
     # Add biasing term
     X = np.vstack([X, np.ones(X.shape[1])])
@@ -52,7 +57,9 @@ def runNN():
 
     losses = []
 
-#    for _ in range(ndata):
+    plt.plot(A[0], A[1], "ro", B[0], B[1], "bo")
+    plt.show()
+
     for epoch in range(100):
 
         # forward pass
@@ -68,10 +75,12 @@ def runNN():
         Yk_out= vsigmoid(Yk_in)
         Yk_phid = vd_sigmoid(Yk_in)
 
+        classification_percent = np.sum(np.sign(Yk_out) == T)/len(T)
+
         error = p1.error(T, Yk_out)
         losses.append(error)
 
-        print(f"Epoch: {epoch}\nError: {error}")
+        print(f"Epoch: {epoch} Error: {error} Percentage: {classification_percent}")
 
         eta = 0.001
         d_k = dFinal(T, Yk_out, Yk_phid)
@@ -83,7 +92,10 @@ def runNN():
         Wji = Wji + DELTA_Wji
         Wkj = Wkj + DELTA_Wkj
 
-    print (Yk_out)
+        print (max(np.max(DELTA_Wji), np.max(DELTA_Wji)))
+
+        if max(np.max(DELTA_Wji), np.max(DELTA_Wji)) < 10^-6:
+            break
 
     return losses
 
