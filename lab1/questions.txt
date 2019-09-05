@@ -1,15 +1,26 @@
+For all learning rules, we define convergence as
+dW -> 0 or max(dW) < 10^-6
+
 1. Apply and compare perceptron learning with the Delta learning rule in batch mode on the generated dataset. Adjust the learning rate and study the convergence of the two algorithms.
 
-Perceptron learning rule stops as soon as all the training data is classified correctly. The decision boundary will often lie very close and even on top of some points.
-Delta learning rule doesn't stop, the error just decreases by miniscule amounts after convergence. We can then define convergence as dW -> 0, more specifically dW < 10^-6. The decision boundary is intuitively much "cleaner" and farther away from the data points.
-The Perceptron rule responds better to a larger learning rate (eta) 0.1, while the delta rule diverges with this learning rate. The delta rule only converges with eta < 0.001, otherwise it diverges.
+Perceptron learning rule stops as soon as all the training data is classified correctly.
+Using a learning rate of 0.1, it converges in 40 epochs on average across 500 runs.
+The decision boundary will often lie very close and even on top of some points as seen in figure 1.
+
+Delta learning rule runs for longer, but the decision boundary is intuitively much "cleaner" and farther away from the data points after convergence as seen in fig2.
+Using a learning rate of 0.001 (learning rate larger than this order of magnitude will result in divergence), convergence takes 231 epochs on average.
 
 2. Compare sequential with a batch learning approach for the Delta rule. How quickly (in terms of epochs) do the algorithms converge? Please ad- just the learning rate and plot the learning curves for each variant. Bear in mind that for sequential learning you should not use the matrix form of the learning rule discussed in section 2.2 and instead perform updates iteratively for each sample. How sensitive is learning to random initialisa- tion?
-The sequential learning converges much faster, in about 26.75 epochs on average to reach dW < 10^-6. Batch learning, takes 155.25 epochs on average to reach the same result. However, sequential learning is much slower per epoch, so the batch learning actually wins out in performance at the end.
-
+The sequential learning converges much faster since it could use a larger learning rate of 0.01
+, in about 26.75 epochs on average to reach dW < 10^-6. 
+Batch learning, takes 155.25 epochs on average to reach the same result. 
+However, sequential learning is much slower per epoch, so the batch learning actually wins out in performance at the end.
+Batch learning is not affected at all by random initialization.
 
 3. Remove the bias, train your network with the Delta rule in batch mode and test its behaviour. In what cases would the perceptron without bias converge and classify correctly all data samples? Please verify your hypothesis by adjusting data parameters, mA and mB.
 
-Removing the biasing term prevents the decision boundary from translating, it can only rotate. 
-The network will not converge if samples from the same set crosses the y axis.
-We adjust mA such that it lies on [0,0], and we can clearly see the network won't converge.
+Removing the biasing term prevents the decision boundary from translating, it can only rotate about the origin. 
+In all cases, the network will converge in the sense that dW approaches 0.
+But the loss remains very high and not all points are classified correctly.
+Only in the case when the 2 sets of points are "mostly" in 2 different quadrants will the network with bias converge.
+We adjust mA such that it lies on [0,0], and we can clearly see decision boundary is not "correct".

@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 
 def generateData(features, mean, sigma, n):
@@ -28,20 +29,52 @@ def error(T, Y):
 def decisionBoundary(x, normal):
     # 0 = w0x + w1y + w2
     # y = (-w0x - w2) / w1
-    return (-normal[:,0] * x - normal[:,2]) / normal[:,1]
-    # return (-normal[:,0] * x) / normal[:,1]
+    if normal.shape[1] == 3:
+        return (-normal[:,0] * x - normal[:,2]) / normal[:,1]
+    else:
+        return (-normal[:,0] * x) / normal[:,1]
+
+def learnPerceptron(eta, X,T,W):
+
+    WX = forwardPass(W, X)
+    Y = np.sign(WX)
+    e = error(T, Y)     
+    dW = -eta * np.matmul((Y - T), np.transpose(X))
+
+    return e, dW
+
+def learnDeltaBatch(eta, X, T, W):
+    WX = forwardPass(W, X)
+    e = error(T, WX)
+    dW = -eta * np.matmul((WX - T), np.transpose(X))
+    
+    return e, dW
+
+def learnDeltaSequential(eta, X, T, W):
+
+    W_old = np.copy(W)
+
+    for i in range(len(T)):
+
+        X_sample = np.transpose(np.atleast_2d(X[:, i]))
+        T_sample = np.atleast_2d(T[i])
+
+        WX = forwardPass(W, X_sample)
+        dW = -eta * np.matmul(np.atleast_2d(WX - T_sample), np.transpose(X_sample))
+
+        W = W + dW
+
+    WX = forwardPass(W, X)
+    e = error(T, WX)
+    
+    return e, W-W_old
+
 
 def main():
 
-    # mode 0 = perceptron
-    # mode 1 = delta rule
-    mode = 1
-
-    eta = 0.001
-
     # Training Data sets A and B
     mA, sigmaA = [1.0, 0.5], 0.5
-    mB, sigmaB = [-2.0, 0.0], 0.5
+    mB, sigmaB = [-1.0, 0.0], 0.5
 
     A = generateData(2, mA, sigmaA, 100)
     B = generateData(2, mB, sigmaB, 100)
@@ -61,54 +94,65 @@ def main():
     T_A, T_B = np.ones(A.shape[1]), -1 * np.ones(A.shape[1])
     T = np.hstack([T_A, T_B])
 
-
+    # Weights
     W = initializeWeights(X.shape[0], 1)
 
-    e_last = 0
     losses = []
 
-    for epoch in range(500):
+    plt.ion()
+
+    eta = 0.01
+
+    convergence_threshold = 10**-6
+
+    start = time.time()
+
+    for epoch in range(1000):
         
-        WX = forwardPass(W, X)
-        Y = np.sign(WX)
+        # Random Initialization
+        # rand = np.arange(len(T))
+        # np.random.shuffle(rand)
+        # X = np.transpose(np.transpose(X)[rand])
+        # T = T[rand]
 
-        # Perceptron Learning
-        if mode == 0:
-            e = error(T, Y)
-            losses.append(e)
-            # print (Y)
-            print(f"Epoch: {epoch}\nPerceptron error: {e}")
-            if e == 0:
-                # Stop when no more mistakes
-                break
-            
-            dW = -eta * np.matmul((Y - T), np.transpose(X))
+        # e, dW = learnPerceptron(eta, X, T, W)
+        # e, dW = learnDeltaBatch(eta, X, T, W)
+        e, dW = learnDeltaSequential(eta, X, T, W)
 
-        # Delta Learning
-        if mode == 1:
-            e = error(T, WX)
-            losses.append(e)
-            # print(f"Epoch: {epoch}\nDelta error: {e}")
-            if abs(e - e_last) < 10**-6:
-                break
-            e_last = e
-            dW = -eta * np.matmul((WX - T), np.transpose(X))
+        print (dW)
 
+        print(f"Epoch: {epoch}\nError: {e}")
+        
+        # update weights
         W = W + dW
 
+        losses.append(e)
+
+        if np.all(np.abs(dW) < convergence_threshold):
+            break
+
         # Plot training points
-        # plt.clf()
-        # plt.ylim(minY,maxY)
-        # plt.xlim(minX,maxX)
-        # plt.plot(A[0], A[1], "ro", B[0], B[1], "bo")
-        # plt.plot(__x, decisionBoundary(__x, W))
-        # plt.show()
-        # plt.pause(0.001)
-    
+        def plot():
+            plt.clf()
+            plt.ylim(minY,maxY)
+            plt.xlim(minX,maxX)
+            plt.plot(A[0], A[1], "ro", B[0], B[1], "bo")
+            plt.plot(__x, decisionBoundary(__x, W))
+            plt.show()
+            plt.pause(0.000001)
+        plot()
+
+    elapsed = time.time() - start
+
+    print (f"\nElapsed: {elapsed}")
+
+    plt.ioff()
+    plot()
+
     return losses
 
 if __name__ == "__main__":
-        # print (np.mean([main() for i in range(20)]))
+    # print ("Mean Epochs:", np.mean([len(main()) for i in range(500)]))
     losses = main()
     import utility
     utility.plotLearningCurve(losses)
