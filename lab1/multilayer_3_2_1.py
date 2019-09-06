@@ -6,18 +6,26 @@ import math
 
 def sigmoid(x):
     return (2 / (1 + np.exp(-x))) - 1
-    # return (1 - math.e**(-x))/(1 + math.e **(-x))
 
 def d_sigmoid(x):
     return (1+sigmoid(x)) * (1-sigmoid(x)) / 2
 
 def dFinal(t, o, phi_final):
+    """
+    Returns the delta at the final layer
+    """
     return (o - t) * phi_final
 
 def dHidden(d_next, w_layer, phi_hidden):
+    """
+    Returns the delta at a layer
+    """
     return np.matmul(np.transpose(w_layer), d_next) * phi_hidden
 
 def DELTA(eta, d, X):
+    """
+    Returns the delta(triangle) for weights
+    """
     return -eta * np.matmul(d, np.transpose(X))
 
 def runNN():
@@ -62,6 +70,15 @@ def runNN():
 
     for epoch in range(100):
 
+        
+        
+        #         +-------+                +-------+
+        #  X(3x1)+>Affine1+--->Hj_in(4x1)+->Sigmoid+->Hj_out(4x1)
+        #         +-------+                +-------+
+        #                                  +---------+
+        #          Wji(4x3)                |D_sigmoid+->Hj_phid(4x1)
+        #                                  +---------+        
+
         # forward pass
         # Hj_in = input to layer J
         # Hj_out = output at layer j
@@ -70,6 +87,13 @@ def runNN():
         Hj_bias = np.ones(Hj_in.shape[1])
         Hj_out = np.vstack([vsigmoid(Hj_in),Hj_bias])
         Hj_phid = np.vstack([vd_sigmoid(Hj_in),Hj_bias])
+
+        #         +-------+                +-------+
+        #  Hj_out+>Affine1+--->Yk_in(1x1)+->Sigmoid+->Yk_out(1x1)
+        #  Biased +-------+                +-------+
+        #  (5x1)                           +---------+
+        #          Wji(1x5)                |D_sigmoid+->Yk_phid(1x1)
+        #                                  +---------+
 
         Yk_in = p1.forwardPass(Wkj,Hj_out)
         Yk_out= vsigmoid(Yk_in)
