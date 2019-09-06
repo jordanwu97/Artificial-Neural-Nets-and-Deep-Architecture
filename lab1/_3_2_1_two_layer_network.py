@@ -1,8 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import part1 as p1
-import nonlinear_exploration_3_1_3 as p313
-import math
+import _3_1_1_lin_seperable_data
+import _3_1_2_single_layer_perceptron
 
 def sigmoid(x):
     return (2 / (1 + np.exp(-x))) - 1
@@ -32,7 +31,6 @@ def runNN():
 
     eta = 0.001
     ndata = 100
-    case = 3
     n_hidden = 4
 
     vsigmoid = np.vectorize(sigmoid)
@@ -45,9 +43,9 @@ def runNN():
 
     ## Really quick just added a second set C to check this actually works on lin non-seperable.
     ## @Bryan please plug in the correct data set
-    A = p1.generateData(2, mA, sigmaA, 100)
-    B = p1.generateData(2, mB, sigmaB, 100)
-    C = p1.generateData(2, mC, sigmaC, 100)
+    A = _3_1_1_lin_seperable_data.generateData(2, mA, sigmaA, ndata)
+    B = _3_1_1_lin_seperable_data.generateData(2, mB, sigmaB, ndata)
+    C = _3_1_1_lin_seperable_data.generateData(2, mC, sigmaC, ndata)
     B = np.hstack([B,C])
     X = np.hstack([A, B])
     # Add biasing term
@@ -60,8 +58,8 @@ def runNN():
     # Wj = weights at layer j
     # Wk = weights at layer k
     # Wkj has a + 1 to reflect the weights associated with the bias
-    Wji = p1.initializeWeights(X.shape[0], n_hidden)
-    Wkj = p1.initializeWeights(n_hidden + 1, 1)
+    Wji = _3_1_2_single_layer_perceptron.initializeWeights(X.shape[0], n_hidden)
+    Wkj = _3_1_2_single_layer_perceptron.initializeWeights(n_hidden + 1, 1)
 
     losses = []
 
@@ -83,7 +81,7 @@ def runNN():
         # Hj_in = input to layer J
         # Hj_out = output at layer j
         # Yk= output at layer k
-        Hj_in = p1.forwardPass(Wji,X)
+        Hj_in = _3_1_2_single_layer_perceptron.forwardPass(Wji,X)
         Hj_bias = np.ones(Hj_in.shape[1])
         Hj_out = np.vstack([vsigmoid(Hj_in),Hj_bias])
         Hj_phid = np.vstack([vd_sigmoid(Hj_in),Hj_bias])
@@ -95,13 +93,13 @@ def runNN():
         #          Wji(1x5)                |D_sigmoid+->Yk_phid(1x1)
         #                                  +---------+
 
-        Yk_in = p1.forwardPass(Wkj,Hj_out)
+        Yk_in = _3_1_2_single_layer_perceptron.forwardPass(Wkj,Hj_out)
         Yk_out= vsigmoid(Yk_in)
         Yk_phid = vd_sigmoid(Yk_in)
 
         classification_percent = np.sum(np.sign(Yk_out) == T)/len(T)
 
-        error = p1.error(T, Yk_out)
+        error = _3_1_2_single_layer_perceptron.error(T, Yk_out)
         losses.append(error)
 
         print(f"Epoch: {epoch} Error: {error} Percentage: {classification_percent}")

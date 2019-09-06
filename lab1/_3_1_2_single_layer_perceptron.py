@@ -1,21 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-
-
-def generateData(features, mean, sigma, n):
-    """
-    Returns 2 sets of data A and B
-    Each dataset has shape (#features, #samples)
-    """
-
-    distA = sigma * np.random.randn(features, n)
-
-    distA[0] = distA[0] + mean[0]
-    distA[1] = distA[1] + mean[1]
-
-    return distA
-
+import _3_1_1_lin_seperable_data
 
 def initializeWeights(input_dim, output_dim):
     return np.random.randn(output_dim, input_dim)
@@ -76,8 +62,8 @@ def main():
     mA, sigmaA = [1.0, 0.5], 0.5
     mB, sigmaB = [-1.0, 0.0], 0.5
 
-    A = generateData(2, mA, sigmaA, 100)
-    B = generateData(2, mB, sigmaB, 100)
+    A = _3_1_1_lin_seperable_data.generateData(2, mA, sigmaA, 100)
+    B = _3_1_1_lin_seperable_data.generateData(2, mB, sigmaB, 100)
     X = np.hstack([A, B])
     # Add biasing term
     X = np.vstack([X, np.ones(X.shape[1])])
