@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import part1  
-
+import _3_1_1_lin_seperable_data.py
+import _3_1_2_single_layer_perceptron.py
 
 def generateNonlinearData(features, mean, sigma, n):
     """
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     mB, sigmaB = [0.0, -0.1], 0.3
 
     A = generateNonlinearData(2, mA, sigmaA, ndata)
-    B = part1.generateData(2, mB, sigmaB, ndata)
+    B = _3_1_1_lin_seperable_data.generateData(2, mB, sigmaB, ndata)
 
 
     # Subselection
@@ -47,7 +47,7 @@ if __name__ == "__main__":
         A_l = np.random.choice(A_g, int(round(len(A_g) * 0.80)), replace=False)
         A_g = np.random.choice(A_l, int(round(len(A_l) * 0.20)), replace=False)
         A[1] = np.concatenate([A_l,A_g])
-        print A[1]
+        print(A[1])
 
 
 
@@ -58,12 +58,12 @@ if __name__ == "__main__":
     # Targets
     T_A, T_B = np.ones(A.shape[1]), -1 * np.ones(B.shape[1])
     T = np.hstack([T_A, T_B])
-    W = part1.initializeWeights(X.shape[0], 1)
+    W = _3_1_2_single_layer_perceptron.initializeWeights(X.shape[0], 1)
     # print (W.shape)
 
     for _ in range(ndata):
 
-        Y = part1.forwardPass(W, X)
+        Y = _3_1_2_single_layer_perceptron.forwardPass(W, X)
         #print("part1.error:", part1.error(T, Y))
         dW = -eta * np.matmul((Y - T), np.transpose(X))
         W = W + dW
