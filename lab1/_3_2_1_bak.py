@@ -9,9 +9,6 @@ def sigmoid(x):
 def d_sigmoid(x):
     return (1+sigmoid(x)) * (1-sigmoid(x)) / 2
 
-v_sigmoid = np.vectorize(lambda x: (2 / (1 + np.exp(-x))) - 1)
-v_d_sigmoid = np.vectorize(lambda x: (1+sigmoid(x)) * (1-sigmoid(x)) / 2)
-
 def dFinal(t, o, phi_final):
     """
     Returns the delta at the final layer
@@ -30,37 +27,14 @@ def DELTA(eta, d, X):
     """
     return -eta * np.matmul(d, np.transpose(X))
 
-class Layer():
-    def __init__(self, activation, d_activation):
-        self.activation = activation
-        self.d_activation = d_activation
-
-    def forward(self,W,X,pad=False):
-        """
-        Returns layer_in, layer_out, layer_phid
-        """
-        self.IN = _3_1_2_single_layer_perceptron.forwardPass(W,X)
-        self.OUT = self.activation(self.IN)
-        self.PHID = self.d_activation(self.IN)
-
-        if pad:
-            padding = np.ones(self.OUT.shape[1])
-            self.OUT = np.vstack([self.OUT, padding])
-            self.PHID = np.vstack([self.PHID, padding])
-
-        return self.OUT
-
-    def d_out_hidden(self, d_in_next, w_next):
-        return np.matmul(np.transpose(w_next), d_in_next)
-    
-    def d_in(self, d_out):
-        return d_out * self.PHID
-
 def runNN():
 
     eta = 0.001
     ndata = 100
     n_hidden = 4
+
+    vsigmoid = np.vectorize(sigmoid)
+    vd_sigmoid = np.vectorize(d_sigmoid)
 
     # Training Data sets A and B
     mA, sigmaA = [1.0, 0.5], 0.5
@@ -90,9 +64,7 @@ def runNN():
     losses = []
 
     plt.plot(A[0], A[1], "ro", B[0], B[1], "bo")
-
-    layer1 = Layer(activation=v_sigmoid, d_activation=v_d_sigmoid)
-    layer2 = Layer(activation=v_sigmoid, d_activation=v_d_sigmoid)
+    plt.show()
 
     for epoch in range(100):
 
@@ -105,7 +77,14 @@ def runNN():
         #          Wji(4x3)                |D_sigmoid+->Hj_phid(4x1)
         #                                  +---------+        
 
-        h_out = layer1.forward(Wji, X, pad=True)
+        # forward pass
+        # Hj_in = input to layer J
+        # Hj_out = output at layer j
+        # Yk= output at layer k
+        Hj_in = _3_1_2_single_layer_perceptron.forwardPass(Wji,X)
+        Hj_bias = np.ones(Hj_in.shape[1])
+        Hj_out = np.vstack([vsigmoid(Hj_in),Hj_bias])
+        Hj_phid = np.vstack([vd_sigmoid(Hj_in),Hj_bias])
 
         #         +-------+                +-------+
         #  Hj_out+>Affine1+--->Yk_in(1x1)+->Sigmoid+->Yk_out(1x1)
@@ -114,23 +93,23 @@ def runNN():
         #          Wji(1x5)                |D_sigmoid+->Yk_phid(1x1)
         #                                  +---------+
 
-        y_out = layer2.forward(Wkj, h_out, pad=False)
+        Yk_in = _3_1_2_single_layer_perceptron.forwardPass(Wkj,Hj_out)
+        Yk_out= vsigmoid(Yk_in)
+        Yk_phid = vd_sigmoid(Yk_in)
 
-        classification_percent = np.sum(np.sign(y_out) == T)/len(T)
+        classification_percent = np.sum(np.sign(Yk_out) == T)/len(T)
 
-        error = _3_1_2_single_layer_perceptron.error(T, y_out)
+        error = _3_1_2_single_layer_perceptron.error(T, Yk_out)
         losses.append(error)
 
         print(f"Epoch: {epoch} Error: {error} Percentage: {classification_percent}")
 
         eta = 0.001
-        d_y_out = y_out - T
-        d_y_in = layer2.d_in(d_y_out)
-        DELTA_Wkj = DELTA(eta, d_y_in, h_out)
+        d_k = dFinal(T, Yk_out, Yk_phid)
+        DELTA_Wkj = DELTA(eta, d_k, Hj_out)
 
-        d_h_out = layer1.d_out_hidden(d_y_in, Wkj)
-        d_h_in = layer1.d_in(d_h_out)
-        DELTA_Wji = DELTA(eta, d_h_in, X)[:-1,:]
+        d_j = dHidden(d_k, Wkj, Hj_phid)
+        DELTA_Wji = DELTA(eta, d_j, X)[:-1,:]
 
         Wji = Wji + DELTA_Wji
         Wkj = Wkj + DELTA_Wkj

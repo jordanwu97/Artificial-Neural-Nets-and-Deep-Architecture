@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import _3_1_1_lin_seperable_data.py
-import _3_1_2_single_layer_perceptron.py
+import _3_1_1_lin_seperable_data
+import _3_1_2_single_layer_perceptron
 
 def generateNonlinearData(features, mean, sigma, n):
     """
@@ -11,8 +11,8 @@ def generateNonlinearData(features, mean, sigma, n):
 
     distA = sigma * np.random.randn(features, n)
 
-    distA[0][1:n/2] = distA[0][1:n/2] + mean[0]
-    distA[0][1:n/2] = distA[0][1:n/2] - mean[0]
+    distA[0][:n//2] = distA[0][:n//2] + mean[0]
+    distA[0][n//2:] = distA[0][n//2:] - mean[0]
     distA[1] = distA[1] + mean[1]
 
     return distA
@@ -23,12 +23,31 @@ if __name__ == "__main__":
     ndata = 100
     subsampleCase = 3
 
+    # 3.1.3 first part (Overlapping clouds)
+
+    mA, sigmaA = [1.0, 0.3], 0.2
+    mB, sigmaB = [0.5, 0.0], 0.3
+
+    A = _3_1_1_lin_seperable_data.generateData(2, mA, sigmaA, ndata)
+    B = _3_1_1_lin_seperable_data.generateData(2, mB, sigmaB, ndata)
+
+    plt.plot(A[0],A[1],"bo")
+    plt.plot(B[0],B[1],"ro")
+    plt.show()
+
+    # 3.1.3 second part (split class A into 2 parts)
     # Training Data sets A and B
     mA, sigmaA = [1.0, 0.3], 0.2
     mB, sigmaB = [0.0, -0.1], 0.3
 
     A = generateNonlinearData(2, mA, sigmaA, ndata)
     B = _3_1_1_lin_seperable_data.generateData(2, mB, sigmaB, ndata)
+
+    plt.plot(A[0],A[1],"bo")
+    plt.plot(B[0],B[1],"ro")
+    plt.show()
+
+    exit()
 
 
     # Subselection
