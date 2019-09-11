@@ -90,4 +90,4 @@ def runNN():
 
 if __name__ == "__main__":
     import utility
-    utility.plotLearningCurve(runNN())
+    utility.plotLearningCurve(("train",runNN()))

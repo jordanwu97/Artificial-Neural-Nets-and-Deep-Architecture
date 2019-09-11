@@ -141,4 +141,4 @@ if __name__ == "__main__":
     # print ("Mean Epochs:", np.mean([len(main()) for i in range(500)]))
     losses = main()
     import utility
-    utility.plotLearningCurve(losses)
+    utility.plotLearningCurve(("train",losses))

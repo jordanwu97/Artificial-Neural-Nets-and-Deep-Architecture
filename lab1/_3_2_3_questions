@@ -1,0 +1,5 @@
+Subsample with 80% training, 20% testing
+
+100 epochs
+Avg with 5 hidden nodes, eta=0.001: 2.0229931803831427
+Avg with 10 hidden nodes, 
