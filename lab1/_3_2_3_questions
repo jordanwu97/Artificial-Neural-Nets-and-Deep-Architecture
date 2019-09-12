@@ -1,5 +1,36 @@
 Subsample with 80% training, 20% testing
 
-100 epochs
-Avg with 5 hidden nodes, eta=0.001: 2.0229931803831427
-Avg with 10 hidden nodes, 
+validation error
+epochs=100, eta=0.001
+
+1 hidden node:
+mean: 2.7523303948329065
+std: 0.31324430700413497
+
+2 hidden nodes:
+mean: 2.4856694270681294
+std: 0.29059535641031636
+
+5 hidden nodes: 
+mean: 1.647339524487748
+std: 0.57088562765184
+
+10 hidden nodes:
+mean: 1.1361111437036793 
+std: 0.4082903494556813
+
+15 hidden nodes:
+mean: 0.6915175729590367
+std: 0.4172654026501639
+
+20 hidden nodes (eta=0.0001)
+mean: 5.544833919989811
+std: 2.4805863725018895
+
+25 hidden nodes:
+mean: 6.52702637793836
+std: 2.071407160117344
+
+With high number of hidden node, we start to see overfitting and much larger standard deviation in losses (variance)
+
+2)

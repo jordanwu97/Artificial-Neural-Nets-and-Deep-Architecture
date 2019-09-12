@@ -12,6 +12,10 @@ def forwardPass(W, x):
 def error(T, Y):
     return np.sum((T - Y) ** 2) / 2
 
+def mse(T, Y):
+    return np.sum((T - Y) ** 2) / T.shape[1]
+
+
 def decisionBoundary(x, normal):
     # 0 = w0x + w1y + w2
     # y = (-w0x - w2) / w1
