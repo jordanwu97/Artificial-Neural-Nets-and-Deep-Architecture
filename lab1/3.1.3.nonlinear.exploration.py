@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import _3_1_1_lin_seperable_data
 import _3_1_2_single_layer_perceptron
+import utility
+
 
 def generateNonlinearData(features, mean, sigma, n):
     """
@@ -22,84 +24,132 @@ if __name__ == "__main__":
     eta = 0.001
     ndata = 100
     subsampleCase = 3
+    part = 2
 
     # 3.1.3 first part (Overlapping clouds)
 
-    mA, sigmaA = [1.0, 0.3], 0.2
-    mB, sigmaB = [0.5, 0.0], 0.3
+    if part == 1:
+        mA, sigmaA = [1.0, 0.3], 0.2
+        mB, sigmaB = [0.5, 0.0], 0.3
 
-    A = _3_1_1_lin_seperable_data.generateData(2, mA, sigmaA, ndata)
-    B = _3_1_1_lin_seperable_data.generateData(2, mB, sigmaB, ndata)
+        A = _3_1_1_lin_seperable_data.generateData(2, mA, sigmaA, ndata)
+        B = _3_1_1_lin_seperable_data.generateData(2, mB, sigmaB, ndata)
 
-    plt.plot(A[0],A[1],"bo")
-    plt.plot(B[0],B[1],"ro")
-    plt.show()
+        #plt.plot(A[0],A[1],"bo")
+        #plt.plot(B[0],B[1],"ro")
+        #plt.show()
+
 
     # 3.1.3 second part (split class A into 2 parts)
-    # Training Data sets A and B
-    mA, sigmaA = [1.0, 0.3], 0.2
-    mB, sigmaB = [0.0, -0.1], 0.3
+    elif part == 2:
+        #Training Data sets A and B
+        mA, sigmaA = [1.0, 0.3], 0.2
+        mB, sigmaB = [0.0, -0.1], 0.3
 
-    A = generateNonlinearData(2, mA, sigmaA, ndata)
-    B = _3_1_1_lin_seperable_data.generateData(2, mB, sigmaB, ndata)
+        A = generateNonlinearData(2, mA, sigmaA, ndata)
+        B = _3_1_1_lin_seperable_data.generateData(2, mB, sigmaB, ndata)
 
-    plt.plot(A[0],A[1],"bo")
-    plt.plot(B[0],B[1],"ro")
-    plt.show()
-
-    exit()
+        #plt.plot(A[0],A[1],"go")
+        #plt.plot(B[0],B[1],"mo")
+        #plt.show()
 
 
     # Subselection
-    if subsampleCase == 0:
-        A = np.asarray([np.random.choice(i, int(round(ndata * .75)), replace=False) for i in A])
-        B = np.asarray([np.random.choice(i, int(round(ndata * .75)), replace=False) for i in B])
-    elif subsampleCase == 1:
-        A = np.asarray([np.random.choice(i, int(round(ndata * .50)), replace=False) for i in A])
-    elif subsampleCase == 2:
-        B = np.asarray([np.random.choice(i, int(round(ndata * .50)), replace=False) for i in B])
-    elif subsampleCase == 3:
+    #subsampleCase == 0:
+        A_0 = np.asarray([np.random.choice(i, int(round(ndata * .75)), replace=False) for i in A])
+        B_0 = np.asarray([np.random.choice(i, int(round(ndata * .75)), replace=False) for i in B])
+    #subsampleCase == 1:
+        A_1 = np.asarray([np.random.choice(i, int(round(ndata * .50)), replace=False) for i in A])
+        B_1 = B
+    #subsampleCase == 2:
+        A_2 = A
+        B_2 = np.asarray([np.random.choice(i, int(round(ndata * .50)), replace=False) for i in B])
+    #subsampleCase == 3:
 
         #TODO: apply to entire Class A not A[0]
-        A_l = [i for i in A[0] if i < 0 ]
-        A_g = [i for i in A[0] if i > 0 ]
-        A_l = np.random.choice(A_g, int(round(len(A_g) * 0.80)), replace=False)
-        A_g = np.random.choice(A_l, int(round(len(A_l) * 0.20)), replace=False)
-        A[1] = np.concatenate([A_l,A_g])
-        print(A[1])
+
+        print(A.shape)
+
+        #A_g = greater then 0 in A[0,:]
+        A_g = A[:,:50]
+        A_l = A[:,50:]
+
+
+        A_l_1 = A_l[:, np.random.choice(A_l.shape[1], int(round(A_l.shape[1] * 0.80)), replace=False)] #only take 80%
+        A_g_1 = A_g[:, np.random.choice(A_g.shape[1], int(round(A_g.shape[1] * 0.20)), replace=False)] #only take 20%
+
+
+        A_3 = np.hstack([A_l_1,A_g_1])
+        B_3 = B
 
 
 
-    X = np.hstack([A, B])
-    # Add biasing term
-    X = np.vstack([X, np.ones(X.shape[1])])
+    for j in range(4):
+        if(j == 0):
+            X = np.hstack([A_0, B_0])
+            T_A, T_B = np.ones(A_0.shape[1]), -1 * np.ones(B_0.shape[1])
 
-    # Targets
-    T_A, T_B = np.ones(A.shape[1]), -1 * np.ones(B.shape[1])
-    T = np.hstack([T_A, T_B])
-    W = _3_1_2_single_layer_perceptron.initializeWeights(X.shape[0], 1)
-    # print (W.shape)
-
-    for _ in range(ndata):
-
-        Y = _3_1_2_single_layer_perceptron.forwardPass(W, X)
-        #print("part1.error:", part1.error(T, Y))
-        dW = -eta * np.matmul((Y - T), np.transpose(X))
-        W = W + dW
+        elif(j == 1):
+            X = np.hstack([A_1, B_1])
+            T_A, T_B = np.ones(A_1.shape[1]), -1 * np.ones(B_1.shape[1])
+        elif(j == 2):
+            X = np.hstack([A_2, B_2])
+            T_A, T_B = np.ones(A_2.shape[1]), -1 * np.ones(B_2.shape[1])
+        else:
+            X = np.hstack([A_3, B_3])
+            T_A, T_B = np.ones(A_3.shape[1]), -1 * np.ones(B_3.shape[1])
 
 
-    plt.plot(A[0], A[1], "ro", B[0], B[1], "bo")
 
-    def line(x, normal):
-        # 0 = w0x + w1y + w2
-        # y = (-w0x - w2) / w1
-        return (-normal[:,0] * x - normal[:,2]) / normal[:,1]
 
-    maxX = X[:, np.argmax(X[1])][0]
-    minX = X[:, np.argmin(X[1])][0]
+        # Add biasing term
+        X = np.vstack([X, np.ones(X.shape[1])])
 
-    x = np.arange(minX, maxX, 0.05)
+        # Targets
+        T = np.hstack([T_A, T_B])
+        W = _3_1_2_single_layer_perceptron.initializeWeights(X.shape[0], 1)
+        # print (W.shape)
 
-    plt.plot(x, line(x, W))
+        losses = []
 
-    #plt.show()
+        exit()
+        #todo test error against complete data
+
+        #train in batch mode
+        for i in range(2):
+            for _ in range(ndata):
+
+                Y = _3_1_2_single_layer_perceptron.forwardPass(W, X)
+
+                error = _3_1_2_single_layer_perceptron.error(T,Y)
+                print("part1.error: ", _, " ", error)
+                losses.append(error)
+
+                dW = -eta * np.matmul((Y - T), np.transpose(X))
+
+                W = W + dW
+
+
+
+
+
+
+        #plt.plot(A[0], A[1], "ro", B[0], B[1], "bo")
+
+        def line(x, normal):
+            # 0 = w0x + w1y + w2
+            # y = (-w0x - w2) / w1
+            return (-normal[:,0] * x - normal[:,2]) / normal[:,1]
+
+        maxX = X[:, np.argmax(X[1])][0]
+        minX = X[:, np.argmin(X[1])][0]
+
+        x = np.arange(minX, maxX, 0.05)
+
+        #plt.plot(x, line(x, W))
+
+        #plt.show()
+
+        utility.plotLearningCurve((("train ", j) ,losses))
+
+
