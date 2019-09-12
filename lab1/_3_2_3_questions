@@ -31,6 +31,7 @@ std: 2.4805863725018895
 mean: 6.52702637793836
 std: 2.071407160117344
 
-With high number of hidden node, we start to see overfitting and much larger standard deviation in losses (variance)
+With high number of hidden node, we start to see overfitting and much larger standard deviation in losses. In the 3D plot we can also see that the model is overfitting the data.
+
 
 2)

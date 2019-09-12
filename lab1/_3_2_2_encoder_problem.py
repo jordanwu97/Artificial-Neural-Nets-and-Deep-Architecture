@@ -14,7 +14,7 @@ def generate_Data(n):
 
 
 def runNN():
-    eta = 0.01
+    eta = 0.1
     ndata = 100
 
     vsigmoid = np.vectorize(_3_2_1_two_layer_network.sigmoid)
@@ -48,7 +48,6 @@ def runNN():
 
         Yk_in = _3_1_2_single_layer_perceptron.forwardPass(Wkj, Hj_out)
         Yk_out = vsigmoid(Yk_in)
-
         Yk_phid = vd_sigmoid(Yk_in)
 
         classification_percent = np.sum(np.sign(Yk_out) == A)/len(A) ##T
@@ -79,11 +78,9 @@ def runNN():
         #network "encodes" Data in strength of hj_out an in incredible high weights of Wkj.
         #hj_out is either 0.3 0.5 or 1 (and those negated)
 
-        if epoch == 4999:
-            print(Wji)
-            print(Hj_out)
-            print(Wkj)
-            print(Yk_out)
+    # print(Wji)
+    print(Hj_out)
+    print(np.all(np.sign(Yk_out) == A))
 
 
     return losses
