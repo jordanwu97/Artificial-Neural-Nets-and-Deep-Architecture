@@ -11,13 +11,21 @@ import pickle
 ### TUNING PARAMETERS
 HIDDEN_LAYER_NODES = 15
 TRAIN_SET_PERCENTAGE = 0.8
-EPOCHS = 10000
+EPOCHS = 100
 ETA = 0.001
 MAKE_VALIDATE_SET = True
 
 
 def gauss(x, y):
     return np.exp(-(x ** 2 + y ** 2) / 10) - 0.5
+
+def makeData():
+    xx, yy = np.meshgrid(np.arange(-5, 5, 0.5), np.arange(-5, 5, 0.5), sparse=False)
+    xx, yy = xx.flatten(), yy.flatten()
+    patterns = np.vstack([xx, yy, np.ones(len(xx))])
+    target = np.atleast_2d(gauss(xx, yy))
+
+    return patterns, target
 
 def main():
 
@@ -26,10 +34,7 @@ def main():
     hidden_layer_nodes = HIDDEN_LAYER_NODES
 
     # Data Set
-    xx, yy = np.meshgrid(np.arange(-5, 5, 0.5), np.arange(-5, 5, 0.5), sparse=False)
-    xx, yy = xx.flatten(), yy.flatten()
-    patterns = np.vstack([xx, yy, np.ones(len(xx))])
-    target = np.atleast_2d(gauss(xx, yy))
+    patterns, target = makeData()
 
     # Subsample Train and Test sets
     if MAKE_VALIDATE_SET:

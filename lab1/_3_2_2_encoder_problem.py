@@ -79,7 +79,7 @@ def runNN():
         #hj_out is either 0.3 0.5 or 1 (and those negated)
 
     # print(Wji)
-    print(Hj_out)
+    print(np.sign(np.transpose(Hj_out[:-1])))
     print(np.all(np.sign(Yk_out) == A))
 
 
@@ -87,4 +87,5 @@ def runNN():
 
 if __name__ == "__main__":
     import utility
-    utility.plotLearningCurve(("train",runNN()))
+    runNN()
+    # utility.plotLearningCurve(("train",runNN()))
