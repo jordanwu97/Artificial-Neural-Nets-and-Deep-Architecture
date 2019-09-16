@@ -28,8 +28,10 @@ __t = np.arange(301,1501)
 
 INPUT = np.transpose(np.array([ __data[__t-offset] for offset in range(-20,1,5) ]))
 OUTPUT = __data[__t+5]
+OUTPUT = OUTPUT.flatten()
 
-TRAIN_SET = INPUT[:-200], OUTPUT[:-200]
+TRAIN_SET = INPUT[:-400], OUTPUT[:-400]
+VALIDATION_SET = INPUT[-400:-200], OUTPUT[-400:-200]
 TEST_SET = INPUT[-200:], OUTPUT[-200:]
 
 if __name__ == "__main__":

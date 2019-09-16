@@ -1,0 +1,15 @@
+The underlying function could be approximated with just 2 nodes in the hidden layers. Adding more nodes does not really boost the performance.
+We could see some increases on hold-out validation error with L2 regularisation (weight) where alpha=0.05.
+With larger alpha values, we see a decrease in performance.
+From the weight histogram, we can see as alpha increases, weights are pushed more towards 0.
+We can see this most clearly in the unpractical case where alpha=10.
+
+Final Evaluation
+Hidden=2
+Alpha=0.05
+Learning_Rate=0.01
+Num Epochs: 2426
+Validation MSE: 0.0015184536434122292
+Test MSE: 0.0018149346922440206
+Test R2: 0.9814295982720301
+
