@@ -15,4 +15,30 @@ Test R2: 0.9814295982720301
 
 3 Layer Questions:
 
+We can see sigma=0.03 give better results than no noise. Any larger noise gives worse results. 
+From the graph we can see higher noise having a stabilizing effect across model size, and preventing overfitting on models with more hidden nodes.
 
+Again, sigma=0.03 gives the best results
+Our results don't really indicate how the different levels of noise would cause various regularisation terms to behave differently. However, we can again see high noise having some smoothing effect across the different levels of regularisation.
+
+We see the best performance with no regularisation and 3 hidden nodes in the second layer when noise alpha=0.09.
+
+2 Layer Results:
+Mean: 0.03119883046900803
+Std: 0.04264428943107262
+
+3 Layer Results:
+Mean: 0.0010689827820792616
+Std: 2.6500916974379854e-05
+
+The 2 Layer network performed much worse than in 4.3.1 The huge standard deviation indicates that it is much more prone to fall into local minimas.
+
+Timing performance
+10 runs each
+2 Layer Results:
+Mean: 0.8763914823532104
+Std: 0.6809352295042466
+3 Layer Results:
+Mean: 1.9400527715682983
+Std: 0.012311457409104765
+Overall, 3L takes about twice as long compared to 2Layer

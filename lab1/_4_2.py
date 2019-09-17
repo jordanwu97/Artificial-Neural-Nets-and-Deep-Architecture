@@ -81,16 +81,17 @@ def getBestValidationScore(hidden_shape, regularisation, learn_rate=0.01, noise_
     prediction_test = nn.predict(pattern_test)
     print ("Test MSE:", mean_squared_error(target_test, prediction_test))
     print ("Test R2:", nn.score(pattern_test, target_test))
-    # # Test Prediction
+    # Test Prediction
     # plt.plot(np.arange(len(prediction_test)), prediction_test, label="prediction")
     # plt.plot(np.arange(len(prediction_test)), target_test, label="actual")
     # plt.xlabel("Sample IDX")
     # plt.ylabel("Output Value")
-    # plt.title("Prediction vs Actual")
+    # plt.title(f"Prediction vs Actual (Network Shape {hidden_shape})")
     # plt.legend()
-    # # plt.savefig(f"pictures/4_3_prediction_vs_actual.png")
+    # plt.savefig(f"pictures/4_3_prediction_vs_actual_{hidden_shape}.png")
     # # plt.show()
     # plt.clf()
+    return mean_squared_error(target_test, prediction_test)
 
     return mse_validation_list[-1]
 
