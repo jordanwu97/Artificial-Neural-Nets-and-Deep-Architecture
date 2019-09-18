@@ -12,3 +12,22 @@ def plotLearningCurve(*losses):
     plt.ylabel("MSE(Log)")
     plt.legend()
     plt.show()
+
+def plotLearningCurves(*losses):
+    """
+    Given a list of losses at each epoch, plot the learning curve
+    """
+    label = " "
+    for value in losses:
+        for i in range(len(value)):
+            if(i==0):
+                label = value[i]
+            else:
+                plt.plot([e+1 for e in range(len(value[i]))], value[i], label=label[i-1])
+    plt.title("Learning Curve with eta 0.001")
+    plt.yscale("log")
+    plt.xlabel("Epochs")
+    plt.ylabel("MSE(Log)")
+    plt.legend()
+    plt.show()
+

@@ -24,7 +24,7 @@ if __name__ == "__main__":
     eta = 0.001
     ndata = 100
     subsampleCase = 3
-    part = 2
+    part = 1
 
     # 3.1.3 first part (Overlapping clouds)
 
