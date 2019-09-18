@@ -1,0 +1,81 @@
+\documentclass[a4paper]{article}
+
+\usepackage[swedish]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{amssymb}
+\usepackage{framed}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3ex}
+
+\begin{document}
+
+\begin{center}
+  {\large Artificial Neural Networks and Deep Architectures, DD2437}\\
+  \vspace{7mm}
+  {\huge Short report on lab assignment 1\\[1ex]}
+  {\Large Learning and generalisation in feed-forward networks ---\\[1ex]
+ from perceptron learning to backprop}\\
+  \vspace{8mm}  
+  {\Large Author 1, Author 2 and Author 3\\}
+  \vspace{4mm}
+  {\large September 1, 2018\\}
+\end{center}
+
+\begin{framed}
+Please be aware of the constraints for this document. The main intention here is that you learn how to select and organise the most relevant information into a concise and coherent report. The upper limit for the number of pages is 6 with fonts and margins comparable to those in this template and no appendices are allowed. \\
+These short reports should be submitted to Canvas by the authors as a team before the lab presentation is made. To claim bonus points the authors should uploaded their short report a day before the bonus point deadline. The report can serve as a support for your lab presentation, though you may put emphasis on different aspects in your oral demonstration in the lab.
+Below you find some extra instructions in italics. Please remove them and use normal font for your text.
+\end{framed}
+
+\section{Main objectives and scope of the assignment}
+
+\textit{List here a concise list of your major intended goals, what you planned to do and what you wanted to learn/what problems you were set to address or investigate, e.g.}\\
+Our major goals in the assignment were  
+\begin{itemize}
+\item to .......
+\item to .......
+\item to ....... 
+\end{itemize}
+
+\textit{Then you can write two or three sentences about the scope, limitations and assumptions made for the lab assignment}\\
+
+\section{Methods}
+\textit{Mention here in just a couple of sentences what tools you have used, e.g. programming/scripting environment, toolboxes. If you use some unconventional method or introduce a clearly different performance measure, you can briefly mention or define it here.}\\
+
+\section{Results and discussion - Part I}
+
+\begin{framed}
+\textit{Make effort to be \textbf{concise and to the point} in your story of what you have done, what you have observed and demonstrated, and in your responses to specific questions in the assignment. You should skip less important details and explanations. In addition, you are requested to add a \textbf{discussion} about your interpretations/predictions or other thoughts concerned with specific tasks in the assignment. This can boil down to just a few bullet points or a couple of sentences for each section of your results. \\ Overall, structure each Results section as you like, e.g. in points. Analogously, feel free to group and combine answers to the questions, even between different experiments, e.g. with linearly separable and non-separable data, if it makes your story easier to convey. \\
+\\Plan your sections and consider making combined figures with subplots rather than a set of separate figures. \textbf{Figures} have to condense information, e.g. there is no point showing a separate plot for generated data and then for a decision boundary, this information can be contained in a single plot. Always carefully describe the axes, legends and add meaningful captions. Keep in mind that figures serve as a support for your description of the key findings (it is like storytelling but in technical format and academic style. \\
+\\Similarly, use \textbf{tables} to group relevant results for easier communication but focus on key aspects, do not overdo it. All figures and tables attached in your report must be accompanied by captions and referred to in the text, e.g. $"$in Fig.X or Table Y one can see ....$"$. \\
+\\When you report quantities such as errors or other performanc measures, round numbers to a reasonable number of decimal digits (usually 2 or 3 max). Apart from the estimated mean values, obtained as a result of averaging over multiple simulations, always include also \textbf{the second moment}, e.g. standard deviation (S.D.). The same applies to some selected plots where \textbf{error bars} would provide valuable information, especially where conclusive comparisons are drawn.} 
+\end{framed}
+
+\subsection{Classification with a single-layer perceptron \textit{(ca.1 page)}}
+\textit{Combine results and findings from perceptron simulations on both linearly separable and non-separable datasets. Answer the questions, quantify the outcomes, discuss your interpretations and summarise key findings as conclusions.}
+
+\subsection{Classification and regression with a two-layer perceptron \textit{(ca.2 pages)}}
+
+\subsubsection{Classification of linearly non-separable data}
+\textit{It seems that one (decision boundary) or two plots (inclusing learning curves) should suffice. Build a story around the questions in the assignment. Include concise motivation for your findings and potential interpretations/speculations.}
+
+\subsubsection{The encoder problem}
+\textit{Here you do not really need any illustrations, this could be a very short section reporting on your experiments in line with the assignment questions.}
+
+\subsubsection{Function approximation}
+\textit{This subsection requires plots to reflect intuitive visual interpretation of the results. Make sure that you condense information and avoid any excessive plotting. Here you might also need to incorporate some illustration of the network's generalisation performance or use a table to systematically report the results requested in the assignment.}
+
+\section{Results and discussion - Part II \textit{(ca.2 pages)}}
+
+\textit{Here you do not have to introduce the problem or define Mackey-Glass time series, as you should focus on the results. You could divide them into two parts as the following two suggested subsections but you might as well keep your story under the main heading of Part II of the assignment. Importantly, always clearly state what network architecture you use, crucially with the number of hidden nodes, systematically report average results with various manipulations (regularisation etc.) and pay attention to differences between training, validation and test errors. Illustrating the outcome of your network predictions along with the original chaotic time series can also be very helpful. Finally, since you compare two- and three-layer architectures, make sure that you do not jump to any conclusions based on a small number of simulations unless you have statistically convincing evidence (when you comare the mean performance measures, their second moment is also relevant). In this part it may be particularly desirable to rely on tables.}
+
+\subsection{Two-layer perceptron for time series prediction - model selection, regularisation and validation}
+
+\subsection{Comparison of two- and three-layer perceptron for noisy time series prediction}
+
+\section{Final remarks \normalsize{\textit{(max 0.5 page)}}}
+\textit{Please share your final reflections on the lab, its content and your own learning. Which parts of the lab assignment did you find confusing or not necessarily helping in understanding important concepts and which parts you have found interesting and relevant to your learning experience? \\
+Here you can also formulate your opinion, interpretation or speculation about some of the simulation outcomes. Please add any follow-up questions that you might have regarding the lab tasks and the results you have produced.}
+
+\end{document}
