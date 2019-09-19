@@ -8,7 +8,7 @@ from _4_1_make_data import TRAIN_SET, TEST_SET, VALIDATION_SET
 from _3_1_2_single_layer_perceptron import mse
 from sklearn.metrics import mean_squared_error
 
-MAX_EPOCHS = 2000
+MAX_EPOCHS = 4000
 EARLY_STOP_THRESHOLD = 10 # number of fails before early stop
 EARLY_STOP_TOLERANCE = 10**-6 # next validation must to better by this amount compared to this validation
 
@@ -25,7 +25,7 @@ def getBestValidationScore(hidden_shape, regularisation, learn_rate=0.01, noise_
     """)
 
     nn = MLPRegressor(
-        # random_state=3,
+        # random_state=5,
         hidden_layer_sizes=hidden_shape,
         activation="logistic",
         solver="sgd",
@@ -36,20 +36,28 @@ def getBestValidationScore(hidden_shape, regularisation, learn_rate=0.01, noise_
 
     early_stop_count = 0
     mse_validation_list = []
-    for _ in range(MAX_EPOCHS):
-        noise = noise_sigma * np.random.randn(pattern.shape[0], pattern.shape[1])
-        nn.partial_fit(pattern + noise, target)
-        prediction_validation = nn.predict(pattern_validation)
-        mse_validation_list.append(mean_squared_error(target_validation, prediction_validation))
-        if _ > 2: # Do Early Stopping
-            # improvement from last validation less than threshold
-            if mse_validation_list[-2] - mse_validation_list[-1] < stop_tolerance:
-                if early_stop_count > EARLY_STOP_THRESHOLD:
-                    break
+
+    num_failed = -1
+    failed = True
+
+    while failed and num_failed < 5:
+        num_failed += 1
+        for eps in range(MAX_EPOCHS):
+            noise = noise_sigma * np.random.randn(pattern.shape[0], pattern.shape[1])
+            nn.partial_fit(pattern + noise, target)
+            prediction_validation = nn.predict(pattern_validation)
+            mse_validation_list.append(mean_squared_error(target_validation, prediction_validation))
+            if eps > 2: # Do Early Stopping
+                # improvement from last validation less than threshold
+                if mse_validation_list[-2] - mse_validation_list[-1] < stop_tolerance:
+                    if early_stop_count > EARLY_STOP_THRESHOLD:
+                        break
+                    else:
+                        early_stop_count += 1
                 else:
-                    early_stop_count += 1
-            else:
-                early_stop_count = 0
+                    early_stop_count = 0
+
+        failed = nn.score(pattern_test, target_test) < .5
 
     print ("Num Epochs:", len(nn.loss_curve_))
     print ("Validation MSE:", mse_validation_list[-1])
@@ -91,7 +99,7 @@ def getBestValidationScore(hidden_shape, regularisation, learn_rate=0.01, noise_
     # plt.savefig(f"pictures/4_3_prediction_vs_actual_{hidden_shape}.png")
     # # plt.show()
     # plt.clf()
-    return mean_squared_error(target_test, prediction_test)
+    # return mean_squared_error(target_test, prediction_test)
 
     return mse_validation_list[-1]
 
@@ -115,19 +123,19 @@ if __name__ == "__main__":
     # plt.show()
 
     # # Regularisation
-    # regularisation = [0, 0.001, 0.01, 0.05, 0.1, 0.5, 1, 5]
-    # val_scores_vs_hidden = [ [ getBestValidationScore((6,), i) for _ in range(5) ] for i in regularisation ]
-    # mean = np.mean(val_scores_vs_hidden, axis=1)
-    # std = np.std(val_scores_vs_hidden, axis=1)
-    # plt.plot(regularisation, mean, label="mean")
-    # plt.plot(regularisation, mean+std, label="std high")
-    # plt.plot(regularisation, mean-std, label="std low")
-    # plt.legend()
-    # plt.ylabel("Validation Score (MSE)")
-    # plt.xlabel("Regularization Coefficient")
-    # plt.title("Validation Score vs Regularization")
-    # plt.xscale("log")
-    # plt.show()
+    regularisation = [0, 0.001, 0.01, 0.05, 0.1, 0.5, 1, 5]
+    val_scores_vs_hidden = [ [ getBestValidationScore((2,), i) for _ in range(5) ] for i in regularisation ]
+    mean = np.mean(val_scores_vs_hidden, axis=1)
+    std = np.std(val_scores_vs_hidden, axis=1)
+    plt.plot(regularisation, mean, label="mean")
+    plt.plot(regularisation, mean+std, label="std high")
+    plt.plot(regularisation, mean-std, label="std low")
+    plt.legend()
+    plt.ylabel("Validation Score (MSE)")
+    plt.xlabel("Regularization Coefficient")
+    plt.title("Validation Score vs Regularization")
+    plt.xscale("log")
+    plt.show()
 
     ## Plot histogram of weight
     # regularisation = [0, 0.001, 0.01, 0.1, 1, 10]
