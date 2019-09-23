@@ -63,8 +63,8 @@ def learnDeltaSequential(eta, X, T, W):
 def main():
 
     # Training Data sets A and B
-    mA, sigmaA = [2.0, 0.5], 0.5
-    mB, sigmaB = [-1.0, 0.0], 0.5
+    mA, sigmaA = [0.0, 0.5], 0.5
+    mB, sigmaB = [-3.0, 0.0], 0.5
 
     A = _3_1_1_lin_seperable_data.generateData(2, mA, sigmaA, 100)
     B = _3_1_1_lin_seperable_data.generateData(2, mB, sigmaB, 100)
@@ -115,25 +115,37 @@ def main():
 
         e_perc, dW_perc = learnPerceptron(eta, X, T, W_perc)
         e_delt, dW_delt = learnDeltaBatch(eta, X, T, W_delt)
+<<<<<<< HEAD
         e_delt_seq, dW_delt_seq = learnDeltaSequential(eta, X, T, W_delt_seq)
+=======
+       # e_delt_seq, dW_delt_seq = learnDeltaSequential(eta, X, T, W_delt_seq)
+>>>>>>> 6ff33a8c27f016676c9713852192a3ba7ef45564
 
-       # print (dW_perc)
-       # print(f"Epoch: {epoch}\nError_perc: {e_perc}")
+        print (dW_perc)
+        print(f"Epoch: {epoch}\nError_perc: {e_perc}")
        # print (dW_delt)
        # print(f"Epoch: {epoch}\nError_delt: {e_delt}")
 
         # update weights
         W_perc = W_perc + dW_perc
         W_delt = W_delt + dW_delt
+<<<<<<< HEAD
         W_delt_seq = W_delt_seq + dW_delt_seq
+=======
+        # W_delt_seq = W_delt_seq + dW_delt_seq
+>>>>>>> 6ff33a8c27f016676c9713852192a3ba7ef45564
 
         # #remove bias
         # W_delt[0][2] = 0
         # W_perc[0][2] = 0
 
-        losses_perc.append(e_perc)
+        # losses_perc.append(e_perc)
         losses_delt.append(e_delt)
+<<<<<<< HEAD
         losses_delt_seq.append(e_delt_seq)
+=======
+        losses_perc.append(e_perc)
+>>>>>>> 6ff33a8c27f016676c9713852192a3ba7ef45564
 
         if np.all((np.abs(dW_delt) < convergence_threshold) & (np.abs(dW_perc) < convergence_threshold)) :
             break
