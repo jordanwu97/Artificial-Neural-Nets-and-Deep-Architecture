@@ -24,7 +24,7 @@ def plotLearningCurves(*losses):
                 label = value[i]
             else:
                 plt.plot([e+1 for e in range(len(value[i]))], value[i], label=label[i-1])
-    plt.title("Learning Curve with eta 0.001")
+    plt.title("Learning Curve")
     plt.yscale("log")
     plt.xlabel("Epochs")
     plt.ylabel("MSE(Log)")
