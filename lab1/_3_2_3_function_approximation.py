@@ -36,6 +36,13 @@ def main():
     # Data Set
     patterns, target = makeData()
 
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection="3d")
+    ax.scatter(xs=patterns[0], ys=patterns[1], zs=target.flatten())
+    plt.show()
+    exit()
+
+
     # Subsample Train and Test sets
     if MAKE_VALIDATE_SET:
         num_samples = target.shape[1]
