@@ -90,11 +90,13 @@ def main():
     # W_delt[0][2] = 0
     W_perc = np.copy(W_delt)
     W_delt_seq = np.copy(W_delt)
+    W_delt_seq_shuffle = np.copy(W_delt)
 
 
     losses_perc = []
     losses_delt = []
     losses_delt_seq = []
+    losses_delt_seq_shuffle = []
 
     plt.ion()
 
@@ -108,47 +110,39 @@ def main():
     for epoch in range(100):
         
         # Random Initialization
-        # rand = np.arange(len(T))
-        # np.random.shuffle(rand)
-        # X = np.transpose(np.transpose(X)[rand])
-        # T = T[rand]
+        rand = np.arange(len(T))
+        np.random.shuffle(rand)
+        X_shuffle = np.transpose(np.transpose(X)[rand])
+        T_shuffle = T[rand]
 
-        e_perc, dW_perc = learnPerceptron(eta, X, T, W_perc)
-        e_delt, dW_delt = learnDeltaBatch(eta, X, T, W_delt)
-<<<<<<< HEAD
-        e_delt_seq, dW_delt_seq = learnDeltaSequential(eta, X, T, W_delt_seq)
-=======
-       # e_delt_seq, dW_delt_seq = learnDeltaSequential(eta, X, T, W_delt_seq)
->>>>>>> 6ff33a8c27f016676c9713852192a3ba7ef45564
+        #e_perc, dW_perc = learnPerceptron(eta, X, T, W_perc)
+        #e_delt, dW_delt = learnDeltaBatch(eta, X, T, W_delt)
+        e_delt_seq, dW_delt_seq = learnDeltaSequential(0.005, X, T, W_delt_seq)
+        e_delt_seq_shuffle, dW_delt_seq_shuffle = learnDeltaSequential(0.005, X_shuffle, T_shuffle, W_delt_seq_shuffle)
 
-        print (dW_perc)
-        print(f"Epoch: {epoch}\nError_perc: {e_perc}")
+       # print (dW_perc)
+        #print(f"Epoch: {epoch}\nError_perc: {e_perc}")
        # print (dW_delt)
        # print(f"Epoch: {epoch}\nError_delt: {e_delt}")
 
         # update weights
-        W_perc = W_perc + dW_perc
-        W_delt = W_delt + dW_delt
-<<<<<<< HEAD
+        #W_perc = W_perc + dW_perc
+        # W_delt = W_delt + dW_delt
         W_delt_seq = W_delt_seq + dW_delt_seq
-=======
-        # W_delt_seq = W_delt_seq + dW_delt_seq
->>>>>>> 6ff33a8c27f016676c9713852192a3ba7ef45564
+        W_delt_seq_shuffle = W_delt_seq_shuffle + dW_delt_seq_shuffle
 
         # #remove bias
         # W_delt[0][2] = 0
         # W_perc[0][2] = 0
 
         # losses_perc.append(e_perc)
-        losses_delt.append(e_delt)
-<<<<<<< HEAD
+        #losses_delt.append(e_delt)
+        #losses_perc.append(e_perc)
+        losses_delt_seq_shuffle.append(e_delt_seq_shuffle)
         losses_delt_seq.append(e_delt_seq)
-=======
-        losses_perc.append(e_perc)
->>>>>>> 6ff33a8c27f016676c9713852192a3ba7ef45564
 
-        if np.all((np.abs(dW_delt) < convergence_threshold) & (np.abs(dW_perc) < convergence_threshold)) :
-            break
+        # if np.all((np.abs(dW_delt) < convergence_threshold) & (np.abs(dW_perc) < convergence_threshold)) :
+          #  break
 
         # Plot training points
         def plot():
@@ -165,19 +159,19 @@ def main():
             plt.legend()
             plt.show()
             plt.pause(0.000001)
-        plot()
+        # plot()
 
     elapsed = time.time() - start
 
     print (f"\nElapsed: {elapsed}")
 
     plt.ioff()
-    plot()
+    #plot()
 
-    return losses_perc, losses_delt, losses_delt_seq
+    return   losses_delt_seq, losses_delt_seq_shuffle
 
 if __name__ == "__main__":
     # print ("Mean Epochs:", np.mean([len(main()) for i in range(500)]))
-    losses_1, losses_del, losses_seq = main()
+    losses_1, losses_del = main()
     import utility
-    utility.plotLearningCurves((["train_delt", "train_seq"], losses_del, losses_seq))
+    utility.plotLearningCurves((["train_seq", "train_seq_shuffle"], losses_1, losses_del))
