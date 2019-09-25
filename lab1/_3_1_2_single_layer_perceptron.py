@@ -115,11 +115,7 @@ def main():
 
         e_perc, dW_perc = learnPerceptron(eta, X, T, W_perc)
         e_delt, dW_delt = learnDeltaBatch(eta, X, T, W_delt)
-<<<<<<< HEAD
         e_delt_seq, dW_delt_seq = learnDeltaSequential(eta, X, T, W_delt_seq)
-=======
-       # e_delt_seq, dW_delt_seq = learnDeltaSequential(eta, X, T, W_delt_seq)
->>>>>>> 6ff33a8c27f016676c9713852192a3ba7ef45564
 
         print (dW_perc)
         print(f"Epoch: {epoch}\nError_perc: {e_perc}")
@@ -129,11 +125,7 @@ def main():
         # update weights
         W_perc = W_perc + dW_perc
         W_delt = W_delt + dW_delt
-<<<<<<< HEAD
         W_delt_seq = W_delt_seq + dW_delt_seq
-=======
-        # W_delt_seq = W_delt_seq + dW_delt_seq
->>>>>>> 6ff33a8c27f016676c9713852192a3ba7ef45564
 
         # #remove bias
         # W_delt[0][2] = 0
@@ -141,11 +133,7 @@ def main():
 
         # losses_perc.append(e_perc)
         losses_delt.append(e_delt)
-<<<<<<< HEAD
         losses_delt_seq.append(e_delt_seq)
-=======
-        losses_perc.append(e_perc)
->>>>>>> 6ff33a8c27f016676c9713852192a3ba7ef45564
 
         if np.all((np.abs(dW_delt) < convergence_threshold) & (np.abs(dW_perc) < convergence_threshold)) :
             break
