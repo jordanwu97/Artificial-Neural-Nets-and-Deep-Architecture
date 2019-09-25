@@ -1,0 +1,2 @@
+1) Points did converge towards stored pattern (non-zero diagonal)
+   Points don't converge (zero-diagonal)
