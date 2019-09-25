@@ -11,12 +11,12 @@ class Hopfield:
             self.W += np.outer(x, x)
 
         # Do we get rid of diagonal?
-        # np.fill_diagonal(self.W,0)
+        np.fill_diagonal(self.W,0)
 
         self.W = self.W / len(samples)
 
     def predict_sync(self, x, max_iter=200):
-        x_cur = x.T
+        x_cur = np.copy(x.T)
         for _ in range(max_iter):
             x_next = sign(self.W @ x_cur)
             if np.all(x_next == x_cur):
@@ -24,6 +24,18 @@ class Hopfield:
             x_cur = x_next
 
         return x_cur.T.astype(int)
+
+    def predict_async(self, x, max_iter=10000):
+
+        x_cur = np.copy(x.T)
+        for _ in range(max_iter):
+            idx = np.random.choice(self.W.shape[0])
+            old = x_cur[idx]
+            x_cur[idx] = np.sign(np.dot(self.W[idx], x_cur))
+            print (idx, old!=x_cur[idx])
+
+        return x_cur 
+
 
     def get_attractors(self):
         attractors = set()
