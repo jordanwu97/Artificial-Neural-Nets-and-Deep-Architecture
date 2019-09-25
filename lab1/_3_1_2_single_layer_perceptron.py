@@ -90,11 +90,13 @@ def main():
     # W_delt[0][2] = 0
     W_perc = np.copy(W_delt)
     W_delt_seq = np.copy(W_delt)
+    W_delt_seq_shuffle = np.copy(W_delt)
 
 
     losses_perc = []
     losses_delt = []
     losses_delt_seq = []
+    losses_delt_seq_shuffle = []
 
     plt.ion()
 
@@ -132,20 +134,7 @@ def main():
         # W_perc[0][2] = 0
 
         # losses_perc.append(e_perc)
-        losses_delt.append(e_delt)
-        losses_delt_seq.append(e_delt_seq)
-
-        if np.all((np.abs(dW_delt) < convergence_threshold) & (np.abs(dW_perc) < convergence_threshold)) :
-            break
-
-        # Plot training points
-        def plot():
             plt.clf()
-            plt.ylim(minY,maxY)
-            plt.xlim(minX,maxX)
-            plt.plot(A[0], A[1], "ro", B[0], B[1], "bo")
-            # plt.plot(__x, decisionBoundary(__x, W_perc), label="perc")
-            plt.plot(__x, decisionBoundary(__x, W_delt), label="delt")
             plt.plot(__x, decisionBoundary(__x, W_delt_seq), label="delt_seq")
             plt.title("Grid")
             plt.xlabel("X-Coord")
@@ -153,19 +142,19 @@ def main():
             plt.legend()
             plt.show()
             plt.pause(0.000001)
-        plot()
+        # plot()
 
     elapsed = time.time() - start
 
     print (f"\nElapsed: {elapsed}")
 
     plt.ioff()
-    plot()
+    #plot()
 
-    return losses_perc, losses_delt, losses_delt_seq
+    return   losses_delt_seq, losses_delt_seq_shuffle
 
 if __name__ == "__main__":
     # print ("Mean Epochs:", np.mean([len(main()) for i in range(500)]))
-    losses_1, losses_del, losses_seq = main()
+    losses_1, losses_del = main()
     import utility
-    utility.plotLearningCurves((["train_delt", "train_seq"], losses_del, losses_seq))
+    utility.plotLearningCurves((["train_seq", "train_seq_shuffle"], losses_1, losses_del))
