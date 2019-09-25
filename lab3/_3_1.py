@@ -25,17 +25,26 @@ class Hopfield:
 
         return x_cur.T.astype(int)
 
-    def predict_async(self, x, max_iter=10000):
+    def predict_async(self, x, max_iter=100000):
+        
+        same_energy_count = 0
+        
+        self.past_energy = []
 
         x_cur = np.copy(x.T)
         for _ in range(max_iter):
             idx = np.random.choice(self.W.shape[0])
-            old = x_cur[idx]
             x_cur[idx] = np.sign(np.dot(self.W[idx], x_cur))
-            print (idx, old!=x_cur[idx])
-
+            self.past_energy.append(self.energy(x_cur))
+            if _ > 1 and self.past_energy[-2] == self.past_energy[-1]:
+                if same_energy_count >= 5000:
+                    break
+                else:
+                    same_energy_count += 1
+            else:
+                same_energy_count = 0
+                
         return x_cur 
-
 
     def get_attractors(self):
         attractors = set()
@@ -45,6 +54,9 @@ class Hopfield:
             p = self.predict_sync(a)
             attractors.add(np.array2string(p))
         return attractors
+    
+    def energy(self, x):
+        return np.round(-1 * x.T @ self.W @ x, 5)
 
 if __name__ == "__main__":
     

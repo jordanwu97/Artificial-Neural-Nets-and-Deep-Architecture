@@ -7,12 +7,13 @@ def loadImgs():
         dat = f.read().split(",")   
     return np.reshape(dat, (len(dat)//1024,1024)).astype(int)
 
-def showImage(data_array, save_file=None):
+def showImage(data_array, save_file=None, show_image=True):
     plt.clf()
     plt.imshow(np.reshape(data_array,(32,32)))
     if save_file:
         plt.savefig(save_file)
-    plt.show()
+    if show_image:
+        plt.show()
 
 if __name__ == "__main__":
 
@@ -41,7 +42,7 @@ if __name__ == "__main__":
     # print ("p11 recovers p3:", np.all(p == images[2]))
     # showImage(p, "pictures/p11_converge.png")
 
-    p = net.predict_async(images[9])
-    showImage(images[9])
-    showImage(images[0])
-    showImage(p)
+    p = np.copy(images[9])
+    for i in range(10):
+        p = net.predict_async(p, max_iter=500)
+        showImage(p, save_file=f"async_image10_iter={i*500}.png", show_image=False)
