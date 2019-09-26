@@ -16,8 +16,11 @@ class Hopfield:
         self.W = self.W / len(samples)
 
     def predict_sync(self, x, max_iter=200):
+
+        self.past_energy = []
         x_cur = np.copy(x.T)
         for _ in range(max_iter):
+            self.past_energy.append(self.energy(x_cur))
             x_next = sign(self.W @ x_cur)
             if np.all(x_next == x_cur):
                 break
@@ -77,8 +80,8 @@ if __name__ == "__main__":
     # part 1
     for x,xd in zip(X,Xd):
         p = net.predict_sync(xd)
-        print (x, p, x == p)
-        print(np.all(p == x))
+        print (x, p, x == p, np.all(p == x))
+        print (net.past_energy)
 
     # part 2 find attractors
     attractors = net.get_attractors()

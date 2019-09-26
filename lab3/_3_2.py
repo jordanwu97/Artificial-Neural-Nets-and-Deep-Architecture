@@ -33,16 +33,16 @@ if __name__ == "__main__":
     # p = net.predict_sync(images[9])
     # print ("p10 degraded p1 recovered:", np.all(p == images[0]))
     # showImage(images[0])
-    # showImage(p)
+    # showImage(p, "pcitures/3_2_p10_converge.png")
 
 
     # # Check p11 works
     # p = net.predict_sync(images[10], max_iter=5000)
     # print ("p11 recovers p2:", np.all(p == images[1]))
     # print ("p11 recovers p3:", np.all(p == images[2]))
-    # showImage(p, "pictures/p11_converge.png")
+    # showImage(p, "pictures/3_2_p11_converge.png")
 
     p = np.copy(images[9])
     for i in range(10):
         p = net.predict_async(p, max_iter=500)
-        showImage(p, save_file=f"async_image10_iter={i*500}.png", show_image=False)
+        showImage(p, save_file=f"pictures/3_2_async_image10_iter={i*500}.png", show_image=False)

@@ -1,0 +1,14 @@
+1) Network might not converge in the sense that states will be stable. Might jump to a different state with the same energy.
+2) 
+Energy at Attractors
+p1 & -490288.0
+p2 & -465114.66667
+p3 & -498090.66667
+
+Energy at Distorted
+p10 & -140964.0
+p11 & -58197.33333
+
+3) When weight matrix is not symetric, energy is not monotonic decreasing w.r.t. iterations
+
+4) Energy is monotonic decreasing
