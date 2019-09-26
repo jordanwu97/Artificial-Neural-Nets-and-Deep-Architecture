@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 def plotCurves(curves, xlabel, ylabel, title, save_file=None):
-
+    plt.axis("on")
     plt.clf()
     for label, vals in curves.items():
         plt.plot(np.arange(len(vals)) + 1, vals, label=label)
@@ -74,6 +74,3 @@ if __name__ == "__main__":
         "Iterations vs Energy (Random Weights Symetric)",
         save_file="pictures/3_3_rand_weights_sym.png",
     )
-
-
-
