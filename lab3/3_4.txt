@@ -1,0 +1,9 @@
+1) Most of the time, 45% noise is acceptable
+
+2) No difference
+
+50 runs each
+Image & Max Noise Mean & Max Noise Std
+P1 & 0.417 & 0.049608467019249855
+P2 & 0.42300000000000004 & 0.0402616442783948
+P3 & 0.41 & 0.05567764362830022
