@@ -22,14 +22,17 @@ import time
 
 time2l = []
 time3l = []
-for i in range(1):
+vscore = []
+for i in range(10):
     start = time.time()
-    getBestValidationScore((2), 0.05)
+    vscore.append(getBestValidationScore((2), 0.05))
     time2l.append(time.time()-start)
     
     start = time.time()
-    getBestValidationScore((2, 3), 0, noise_sigma=0.09, learn_rate=0.1)
+    # getBestValidationScore((2, 3), 0, noise_sigma=0.09, learn_rate=0.1)
     time3l.append(time.time()-start)
+
+print (np.mean(vscore), np.std(vscore))
 
 print(
     f"""

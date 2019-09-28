@@ -1,0 +1,13 @@
+1) Most of the time, 45% noise is acceptable
+
+2) No difference
+
+50 runs each
+Image & Max Noise Mean & Max Noise Std
+P1 & 0.42699999999999994 & 0.0363455636907725
+P2 & 0.42900000000000005 & 0.030149626863362672
+P3 & 0.41400000000000003 & 0.04363484845854287
+
+3) The network will not converge to the correct attractors if noise level is too high. 
+Any additional steps after convergence of the little model will not change the result. (Should be intuitive since weights don't change)
+We notice the inverse of the trained images also become attractors. When noise is > 60%, network converges to these inverted images.

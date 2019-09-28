@@ -99,7 +99,7 @@ def getBestValidationScore(hidden_shape, regularisation, learn_rate=0.01, noise_
     # plt.savefig(f"pictures/4_3_prediction_vs_actual_{hidden_shape}.png")
     # # plt.show()
     # plt.clf()
-    # return mean_squared_error(target_test, prediction_test)
+    return mean_squared_error(target_test, prediction_test)
 
     return mse_validation_list[-1]
 
@@ -142,4 +142,4 @@ if __name__ == "__main__":
     # val_scores_vs_hidden = [ [ getBestValidationScore((6,), i) for _ in range(1) ] for i in regularisation ]
 
     ## Run Best Model
-    getBestValidationScore((2,), 0.05)
+    print (getBestValidationScore((2,), 0.05))

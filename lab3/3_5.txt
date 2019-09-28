@@ -1,0 +1,6 @@
+3 Images is the max the network can store. Images are given 0.2 noise.
+When given 4 images, network doesn't converge to correct image
+
+For random patterns: 50 images.
+
+Difference between the random vs given images is orthogonality. The given images are much less orthogonal versus the random images.

@@ -82,6 +82,11 @@ def runNN():
     print(np.sign(np.transpose(Hj_out[:-1])))
     print(np.all(np.sign(Yk_out) == A))
 
+    for i in range(8):
+        print (f"{np.transpose(A)[i]} & {np.sign(np.transpose(Hj_out[:-1])[i])}")
+
+    print (np.sign(Wji))
+
 
     return losses
 
