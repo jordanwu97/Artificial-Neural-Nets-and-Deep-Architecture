@@ -1,0 +1,2 @@
+5 Images is the max the network can store
+When given 5 images, network doesn't converge to correct image

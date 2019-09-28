@@ -17,6 +17,7 @@ if __name__ == "__main__":
 
     print("Image & Max Noise Mean & Max Noise Std")
 
+    # For different images check
     for i, image_original in enumerate(images):
 
         max_noise = []

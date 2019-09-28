@@ -23,25 +23,23 @@ def plotCurves(curves, xlabel, ylabel, title, save_file=None):
 if __name__ == "__main__":
     images = loadImgs()
 
-    # net = Hopfield()
-    # net.train(images[:3])
+    net = Hopfield()
+    net.train(images[:3])
 
-    # print ("Energy at Attractors")
-    # for i, im in enumerate(images[:3]):
-    #     print (f"p{i+1} &", net.energy(im))
+    print ("Energy at Attractors")
+    for i, im in enumerate(images[:3]):
+        print (f"p{i+1} &", net.energy(im))
 
-    # print ("Energy at Distorted")
-    # for i, im in enumerate(images[9:]):
-    #     print (f"p{i+10} &", net.energy(im))
+    print ("Energy at Distorted")
+    for i, im in enumerate(images[9:]):
+        print (f"p{i+10} &", net.energy(im))
 
-    # p = []
-    # for i in (9,10):
-    #     net.predict_async(images[i])
-    #     p.append((f"p{i+1}", net.past_energy))
+    p = []
+    for i in (9,10):
+        net.predict_async(images[i])
+        p.append((f"p{i+1}", net.past_energy))
 
-    # print (dict(p))
-
-    # plotCurves(dict(p), "Iterations", "Energy", "Iterations vs Energy", save_file="3_3_it_vs_energy.png")
+    plotCurves(dict(p), "Iterations", "Energy", "Iterations vs Energy", save_file="pictures/3_3_it_vs_energy.png")
 
     net = Hopfield()
 
@@ -50,7 +48,7 @@ if __name__ == "__main__":
     assert not np.array_equal(net.W, net.W.T)
 
     x = sign(np.random.randn(100))
-    net.predict_async(x)
+    net.predict_async(x, max_iter=10000)
 
     plotCurves(
         {"Arbitrary Starting": net.past_energy},
@@ -65,7 +63,7 @@ if __name__ == "__main__":
     assert np.array_equal(net.W, net.W.T)
 
     x = sign(np.random.randn(100))
-    net.predict_async(x)
+    net.predict_async(x, max_iter=10000)
 
     plotCurves(
         {"Arbitrary Starting": net.past_energy},

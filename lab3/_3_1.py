@@ -11,7 +11,7 @@ class Hopfield:
             self.W += np.outer(x, x)
 
         # Do we get rid of diagonal?
-        np.fill_diagonal(self.W,0)
+        # np.fill_diagonal(self.W,0)
 
         self.W = self.W / len(samples)
 
