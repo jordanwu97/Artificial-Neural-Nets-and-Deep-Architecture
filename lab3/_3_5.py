@@ -8,26 +8,33 @@ if __name__ == "__main__":
     images = np.flip(images, axis=0)
     N = images.shape[1]
 
-    for train_idx in range(len(images)):
-        to_train = images[:train_idx + 1]
+    def tryToTrainPredict(_images, noiseLevel):
 
-        net = Hopfield()
-        net.train(to_train)
+        for train_idx in range(len(_images)):
+            target = _images[:train_idx + 1]
 
-        # try reconvering the last image (target) from a noisy version of target
-        target = to_train[0]
+            net = Hopfield()
+            net.train(target)
 
-        args = np.random.choice(N, int(0 * N), replace=False)
-        noisy = np.copy(target)
-        noisy[args] = noisy[args] * -1
+            # try reconvering the last image (target) from a noisy version of target
+            args = np.random.choice(N, int(noiseLevel * N), replace=False)
+            noisy = np.copy(target)
+            noisy[:,args] = noisy[:,args] * -1
+            pred = net.predict_sync(noisy)
 
-        pred = net.predict_sync(noisy)
+            passed = np.all(pred == target)
 
-        # [ showImage(p) for p in pred ]
+            # print ("Target Energy", net.energy(target[0]))
+            # print ("Pred Energy", net.energy(pred[0]))
+            # print(f"Num Trained {train_idx + 1}, Passed:", passed)
 
-        # print ("Target Energy", net.energy(target))
-        # print ("Pred Energy", net.energy(pred))
+            if not passed:
+                return train_idx
 
-        # rememberedAll = [ pred == target ] 
+    print (tryToTrainPredict(images, 0.2))
 
-        print(f"Num Trained {train_idx + 1}, Passed:", np.all(pred == target))
+    randomImages = sign(np.random.randn(200, N))
+
+    print ("\n", "Random")
+
+    print (tryToTrainPredict(randomImages, 0.2))
