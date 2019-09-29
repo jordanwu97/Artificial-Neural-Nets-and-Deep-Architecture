@@ -24,8 +24,8 @@ if __name__ == "__main__":
 
     images = loadImgs()
 
-    # for dat in images[[1,2,10]]:
-    #     showImage(dat)
+#    for dat in images[[1,2,10]]:
+#       showImage(dat)
 
     # train p1 p2 p3
     net = Hopfield()
@@ -46,7 +46,9 @@ if __name__ == "__main__":
     print ("p11 recovers p3:", np.all(p == images[2]))
     showImage(p, save_file="pictures/3_2_p11_converge.png", show_image=False)
 
-    p = np.copy(images[9])
+    #p = np.copy(images[9])
+    p = np.random.randint(2,size=1024) *2 -1
+
     for i in range(10):
         p = net.predict_async(p, max_iter=500)
         plt.subplot(2,5,i+1)
@@ -54,5 +56,5 @@ if __name__ == "__main__":
 
     plt.suptitle(f"P9")
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    plt.savefig(f"pictures/3_2_p10_iterations.png")
+    plt.savefig(f"pictures/3_2_p_rand_iterations.png")
     

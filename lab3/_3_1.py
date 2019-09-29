@@ -19,13 +19,13 @@ class Hopfield:
 
         self.past_energy = []
         x_cur = np.copy(x.T)
+
         for _ in range(max_iter):
             self.past_energy.append(self.energy(x_cur))
             x_next = sign(self.W @ x_cur)
             if np.all(x_next == x_cur):
                 break
             x_cur = x_next
-
         return x_cur.T.astype(int)
 
     def predict_async(self, x, max_iter=100000):
@@ -76,6 +76,7 @@ if __name__ == "__main__":
     net = Hopfield()
 
     net.train(X)
+
 
     # part 1
     for x,xd in zip(X,Xd):
