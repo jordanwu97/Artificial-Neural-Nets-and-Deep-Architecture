@@ -47,5 +47,5 @@ if __name__ == "__main__":
         print(f"P{i+1} & {np.mean(max_noise)} & {np.std(max_noise)}")
         plt.suptitle(f"P{i+1}")
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-        plt.savefig(f"pictures/3_4_P{i+1}_noise.png")
+        plt.savefig(f"pictures/3_4_P{i+1}_noise.png", bbox_inches='tight')
         plt.clf()

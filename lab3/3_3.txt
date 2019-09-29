@@ -9,6 +9,6 @@ Energy at Distorted
 p10 & -141988.0
 p11 & -59221.33333
 
-3) When weight matrix is not symetric, energy is not monotonic decreasing w.r.t. iterations. Results in random ups and downs.
+3) When weight matrix is not symetric, energy does not decrease generally w.r.t. iterations. Results in random ups and downs.
 
 4) Energy is decreasing generally, but not monotonic. If we set the diagonal of the weight matrix to 0, then it becomes monotonic decreasing.

@@ -13,7 +13,7 @@ def showImage(data_array, title=None, save_file=None, show_image=True, wait=None
     if title:
         plt.title(title)
     if save_file:
-        plt.savefig(save_file)
+        plt.savefig(save_file, bbox_inches='tight')
     if show_image:
         plt.show(block=(wait==None))
         if wait:
@@ -46,15 +46,25 @@ if __name__ == "__main__":
     print ("p11 recovers p3:", np.all(p == images[2]))
     showImage(p, save_file="pictures/3_2_p11_converge.png", show_image=False)
 
-    #p = np.copy(images[9])
-    p = np.random.randint(2,size=1024) *2 -1
-
+    # Iterate P9
+    p = np.copy(images[9])
     for i in range(10):
         p = net.predict_async(p, max_iter=500)
         plt.subplot(2,5,i+1)
         showImage(p, title=f"{(i+1)*500}", show_image=False)
 
-    plt.suptitle(f"P9")
+    plt.suptitle(f"P10")
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    plt.savefig(f"pictures/3_2_p_rand_iterations.png")
+    plt.savefig(f"pictures/3_2_p10_rand_iterations.png", bbox_inches='tight')
+
+    # Iterate a random image
+    p = np.random.randint(2,size=1024) *2 -1
+    for i in range(10):
+        p = net.predict_async(p, max_iter=500)
+        plt.subplot(2,5,i+1)
+        showImage(p, title=f"{(i+1)*500}", show_image=False)
+
+    plt.suptitle(f"Random")
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    plt.savefig(f"pictures/3_2_randstart_iterations.png", bbox_inches='tight')
     
