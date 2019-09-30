@@ -78,12 +78,14 @@ if __name__ == "__main__":
 
     net.train(X)
 
+    trained_attractors = set([ np.array2string(x) for x in X ])
 
     # part 1
     for x,xd in zip(X,Xd):
         p = net.predict_sync(xd)
-        print (x, p, x == p, np.all(p == x))
-        print (net.past_energy)
+        print (np.all(p == x))
+        print (np.array2string(p) in trained_attractors)
+        print (len(net.past_energy))
 
     # part 2 find attractors
     attractors = net.get_attractors()

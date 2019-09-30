@@ -15,7 +15,7 @@ def plotCurves(curves, xlabel, ylabel, title, save_file=None):
     plt.legend()
 
     if save_file:
-        plt.savefig(save_file)
+        plt.savefig(save_file, bbox_inches='tight')
 
     plt.show()
 
@@ -28,11 +28,11 @@ if __name__ == "__main__":
 
     print ("Energy at Attractors")
     for i, im in enumerate(images[:3]):
-        print (f"p{i+1} &", net.energy(im))
+        print (f"p{i+1} & attractor &", net.energy(im))
 
     print ("Energy at Distorted")
     for i, im in enumerate(images[9:]):
-        print (f"p{i+10} &", net.energy(im))
+        print (f"p{i+10} & distorted &", net.energy(im))
 
     p = []
     for i in (9,10):
