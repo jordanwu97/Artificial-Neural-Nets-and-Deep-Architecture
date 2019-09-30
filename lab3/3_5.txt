@@ -4,3 +4,11 @@ When given 4 images, network doesn't converge to correct image
 For random patterns: 50 images.
 
 Difference between the random vs given images is orthogonality. The given images are much less orthogonal versus the random images.
+
+
+stable samples?
+
+
+without self connection wii the network can store more random patterns (about 65)
+
+biasing dramatically reduces this value to 5

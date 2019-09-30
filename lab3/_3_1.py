@@ -4,14 +4,15 @@ sign = np.vectorize(lambda x: np.where(x>=0, 1, -1))
 # sign = np.sign
 
 class Hopfield:
-    def train(self, samples):
+    def train(self, samples, delete_diagonal=False):
         width = samples.shape[1]
         self.W = np.zeros((width, width))
         for x in samples:
             self.W += np.outer(x, x)
 
         # Do we get rid of diagonal?
-        # np.fill_diagonal(self.W,0)
+        if delete_diagonal:
+            np.fill_diagonal(self.W,0)
 
         self.W = self.W / len(samples)
 
@@ -29,9 +30,9 @@ class Hopfield:
         return x_cur.T.astype(int)
 
     def predict_async(self, x, max_iter=100000):
-        
+
         same_energy_count = 0
-        
+
         self.past_energy = []
 
         x_cur = np.copy(x.T)
@@ -46,8 +47,8 @@ class Hopfield:
                     same_energy_count += 1
             else:
                 same_energy_count = 0
-                
-        return x_cur 
+
+        return x_cur
 
     def get_attractors(self):
         attractors = set()
@@ -57,12 +58,12 @@ class Hopfield:
             p = self.predict_sync(a)
             attractors.add(np.array2string(p))
         return attractors
-    
+
     def energy(self, x):
         return np.round(-1 * x.T @ self.W @ x, 5)
 
 if __name__ == "__main__":
-    
+
     x1 = [-1, -1, 1, -1, 1, -1, -1, 1]
     x2 = [-1, -1, -1, -1, -1, 1, -1, -1]
     x3 = [-1, 1, 1, -1, -1, 1, -1, 1]
