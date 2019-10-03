@@ -51,19 +51,19 @@ if __name__ == "__main__":
     def checkStable(_images, noiseLevel, delete_diagonal=False):
 
         N = _images.shape[1]
-        
+
         perf = []
         perf_noise = []
 
         for train_idx in range(0, len(_images)):
-            
-            target = _images[:train_idx + 1]
+
+            target = _images[: train_idx + 1]
             target_noisy = np.copy(target)
 
             for i in range(len(target_noisy)):
                 args = np.random.choice(N, int(noiseLevel * N), replace=False)
                 target_noisy[i, args] = target_noisy[i, args] * -1
-            
+
             net = Hopfield()
             net.train(target, delete_diagonal=delete_diagonal)
 
@@ -73,12 +73,17 @@ if __name__ == "__main__":
                 one_iter = net.predict_sync(target[:-1, :], max_iter=1)
                 stable = np.sum(np.all(stable == one_iter, axis=1)) / len(stable)
                 perf.append(stable)
-            
+
                 one_iter_noisy = net.predict_sync(target_noisy[:-1, :], max_iter=1)
-                stable_noisy = np.sum(np.all(stable_noisy == one_iter_noisy, axis=1)) / len(stable_noisy)
+                stable_noisy = np.sum(
+                    np.all(stable_noisy == one_iter_noisy, axis=1)
+                ) / len(stable_noisy)
                 perf_noise.append(stable_noisy)
 
-                print (train_idx, stable, stable_noisy)
+                print(train_idx, stable, stable_noisy)
+
+                if np.sum(perf[-10:]) == 0:
+                    break
 
             stable = net.predict_sync(target)
             stable_noisy = net.predict_sync(target_noisy)
@@ -100,7 +105,7 @@ if __name__ == "__main__":
             for i in range(len(noisy)):
                 args = np.random.choice(N, int(noiseLevel * N), replace=False)
                 noisy[i, args] = noisy[i, args] * -1
-            
+
             pred = net.predict_sync(noisy)
 
             # performance rate
@@ -116,38 +121,62 @@ if __name__ == "__main__":
         return performance
 
     # 3.5.1
-    resultImages = tryToTrainPredict(images, 0.2)
-    resultImages0Diagonal = tryToTrainPredict(images, 0.2, delete_diagonal=True)
+    # resultImages = tryToTrainPredict(images, 0.2)
+    # resultImages0Diagonal = tryToTrainPredict(images, 0.2, delete_diagonal=True)
 
-    randomImages = sign(np.random.randn(200, images.shape[1]))
-    resultRandom = tryToTrainPredict(randomImages, 0.2)
-    resultRandom0Diagonal = tryToTrainPredict(randomImages, 0.2, delete_diagonal=True)
+    # randomImages = sign(np.random.randn(200, images.shape[1]))
+    # resultRandom = tryToTrainPredict(randomImages, 0.2)
+    # resultRandom0Diagonal = tryToTrainPredict(randomImages, 0.2, delete_diagonal=True)
 
-    save = (resultImages, resultImages0Diagonal, resultRandom, resultRandom0Diagonal)
-    pickle.dump(save, open("perf.pkl", "wb"))
+    # save = (resultImages, resultImages0Diagonal, resultRandom, resultRandom0Diagonal)
+    # pickle.dump(save, open("perf.pkl", "wb"))
 
+    (
+        resultImages,
+        resultImages0Diagonal,
+        resultRandom,
+        resultRandom0Diagonal,
+    ) = pickle.load(open("perf.pkl", "rb"))
 
     plotCurves(
         {
-            "Given Images": resultImages,
-            "Given Images (0-Diag)": resultImages0Diagonal,
             "Random Images": resultRandom,
             "Random Images (0-Diag)": resultRandom0Diagonal,
         },
         "# Images Trained",
         "Identified Correctly",
         "Performance (Given vs Random Images)",
+        save_file="pictures/3_5_1_random.png",
+    )
+
+    plotCurves(
+        {"Given Images": resultImages, "Given Images (0-Diag)": resultImages0Diagonal},
+        "# Images Trained",
+        "Identified Correctly",
+        "Performance (Given vs Random Images)",
+        save_file="pictures/3_5_1_given.png",
     )
 
     # 3.5.2
-    # randomImages = sign(np.random.randn(300, 100))
+    randomImages = sign(np.random.randn(300, 100))
     # stable, stable_noise = checkStable(randomImages, 0.2)
+    # stable_0d, stable_noise_0d = checkStable(randomImages, 0.2, delete_diagonal=True)
 
-    # pickle.dump((stable, stable_noise), open("stability.pkl", "wb"))
+    # pickle.dump((stable_0d, stable_noise_0d), open("stability_od.pkl", "wb"))
     stable, stable_noise = pickle.load(open("stability.pkl", "rb"))
+    stable_0d, stable_noise_0d = pickle.load(open("stability_od.pkl", "rb"))
+
 
     plotCurves(
-        {"No Noise": stable, "Noisy": stable_noise}, "Images trained", "Stable", "Stability", save_file="pictures/3_5_stability.png"
+        {"No Noise": stable, 
+        "Noisy": stable_noise,
+        "No Noise (0-Diag)": stable_0d, 
+        "Noisy (0-Diag)": stable_noise_0d
+        },
+        "Images trained",
+        "Stable",
+        "Stability",
+        save_file="pictures/3_5_stability.png",
     )
 
     # 3.5.3
