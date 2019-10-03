@@ -58,9 +58,8 @@ class RBF_NET:
             callback() if callback else None
             if self.error(X, Y) < 0.01:
                 break
-        
+
         return _
-        
 
     def predict(self, X):
         return self.activation(self.phi(X) @ self.W)
@@ -68,10 +67,15 @@ class RBF_NET:
     def error(self, X, Y):
         return np.sum((self.predict(X) - Y) ** 2)
 
-def runWithParams(X,Y,X_VAL,Y_VAL,means,variance,training_method)
+
+def runWithParams(x, y, x_val, y_val, means, variance, training_method):
     """
     Returns validation error based on training with X, Y
     """
+    n = RBF_NET(means, variance)
+    n.__getattribute__(training_method)(x, y, callback=None)
+    return n.error(x_val, y_val)
+
 
 if __name__ == "__main__":
 
