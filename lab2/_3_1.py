@@ -30,7 +30,7 @@ class RBF_NET:
 
         return phi
 
-    def train_batch(self, X, Y, callback=None):
+    def train_batch(self, X, Y, max_epochs=1, eta=1, callback=None):
         """
         Return # epochs to convergence (always 1)
         """
@@ -38,6 +38,7 @@ class RBF_NET:
         phi = self.phi(X)
         self.W = np.linalg.inv(phi.T @ phi) @ phi.T @ Y
         callback() if callback else None
+        return 1
 
     def train_delta_single(self, X_scalar, Y_scalar, eta=1):
         phi_ = self.phi(X_scalar)
@@ -45,19 +46,25 @@ class RBF_NET:
         e = (Y_scalar - pred)[0]
         delW = (eta * e * phi_).flatten()
         self.W += delW
-        return 1
+        return np.max(np.abs(delW))
 
-    def train_delta_batch(self, X, Y, eta=1, callback=None):
+    def train_delta_batch(self, X, Y, max_epochs=100, eta=1, callback=None):
         """
         Return # epochs to convergence (when error < 0.01)
         """
         self.W = np.random.randn(*self.rbfs_mean.shape)
-        for _ in range(1, 101):
+        
+        old_e = 0
+        
+        for _ in range(1, max_epochs):
+            # print (_)
+            maxDelW = 0
             for i in range(len(X)):
-                self.train_delta_single(X[i : i + 1], Y[i : i + 1], eta=eta)
-            callback() if callback else None
-            if self.error(X, Y) < 0.01:
+                maxDelW = max(self.train_delta_single(X[i : i + 1], Y[i : i + 1], eta=eta), maxDelW)
+            new_e = self.error(X,Y)
+            if abs(old_e - new_e) < 10**-5:
                 break
+            old_e = new_e
 
         return _
 
