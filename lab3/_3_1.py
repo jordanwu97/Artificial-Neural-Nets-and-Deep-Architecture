@@ -14,7 +14,7 @@ class Hopfield:
         if delete_diagonal:
             np.fill_diagonal(self.W,0)
 
-        self.W = self.W / len(samples)
+        self.W = self.W / len(samples)h
 
     def predict_sync(self, x, max_iter=200):
 
