@@ -1,5 +1,6 @@
 import numpy as np
 from _3_3 import plotCurves
+import matplotlib.pyplot as plt
 
 sign = np.vectorize(lambda x: np.where(x >= 0, 1, -1))
 
@@ -14,126 +15,69 @@ class sparse_Hopfield:
             self.W += np.outer(x-activity, x-activity)
 
         # Do we get rid of diagonal?
-        # np.fill_diagonal(self.W,0)
+        np.fill_diagonal(self.W,0)
 
         self.W = self.W / len(samples)
 
     def predict_sync(self, x, bias, max_iter=200):
 
-        self.past_energy = []
+        # self.past_energy = []
         x_cur = np.copy(x.T)
 
         for _ in range(max_iter):
-            self.past_energy.append(self.energy(x_cur))
+            # self.past_energy.append(self.energy(x_cur))
             x_next = 0.5 + 0.5*sign((self.W @ x_cur) - bias)
             if np.all(x_next == x_cur):
                 break
             x_cur = x_next
+        
         return x_cur.T.astype(int)
-
-    def predict_async(self, x, max_iter=100000):
-
-        same_energy_count = 0
-
-        self.past_energy = []
-
-        x_cur = np.copy(x.T)
-        for _ in range(max_iter):
-            idx = np.random.choice(self.W.shape[0])
-            x_cur[idx] = np.sign(np.dot(self.W[idx], x_cur))
-            self.past_energy.append(self.energy(x_cur))
-            if _ > 1 and self.past_energy[-2] == self.past_energy[-1]:
-                if same_energy_count >= 5000:
-                    break
-                else:
-                    same_energy_count += 1
-            else:
-                same_energy_count = 0
-
-        return x_cur
-
-    def get_attractors(self):
-        attractors = set()
-        N = self.W.shape[0]
-        for i in range(2 ** N):
-            a = np.array(list(f"{i:b}".zfill(N)), dtype=int) * 2 - 1
-            p = self.predict_sync(a)
-            attractors.add(np.array2string(p))
-        return attractors
-
-    def energy(self, x):
-        return np.round(-1 * x.T @ self.W @ x, 5)
 
 
 if __name__ == "__main__":
 
     N=100
-    samples = 100
-    activity=0.1
-    bias = 0
+    samples = 200
     net = sparse_Hopfield()
-
-    #create sparse pattern
-    X = np.zeros([samples,N],dtype=int)
-    for index in range(samples):
-        args = np.random.choice(N, int(activity * N), replace=False)
-        X[index, args] = X[index, args] + 1
 
     #how many patterns can be stored in network?
 
-    def max_trained_patterns(b_in):
+    def max_trained_patterns(b_in, activity):
         max_trained_patterns = 0
         for i in range(samples):
-            net.train(X[:i+1], activity)
-            pred = net.predict_sync(X[:i+1],b_in)
-            if np.all(pred[i] == X[i]):
+            
+            targets = X[:i+1]
+
+            net.train(targets, activity)
+            pred = net.predict_sync(targets,b_in)
+            # print (np.mean(pred))
+            if np.all(pred[i] == targets[i]):
                 #print(i, pred[i], X[i])
                 max_trained_patterns = i+1
             else:
                 break
         return max_trained_patterns
 
+    biases = np.arange(0,2.01,0.05)
 
-    trained = []
-    for bias in range(20+1):
-        n = max_trained_patterns(bias*0.05)
-        print("max patterns: (bias ", bias*0.05, ") ", n)
-        trained.append(n)
+    for activity in (0.1, 0.05, 0.01):
 
-    plotCurves(
-            {"Performance": trained},
-            "bias * 0.05",
-            "max Images trained",
-            "Performance vs bias (random samples)",
-            save_file="pictures/3_6_performance_patterns_10.png",
-        )
+        X = np.zeros([samples,N],dtype=int)
+        for index in range(samples):
+            args = np.random.choice(N, int(activity * N), replace=False)
+            X[index, args] = X[index, args] + 1
+    
+        trained = []
+        for bias in biases:
+            n = max_trained_patterns(bias, activity)
+            # print("max patterns: (bias ", bias, ") ", n)
+            trained.append(n)
 
-    activity = 0.05
-    trained = []
-    for bias in range(20+1):
-        n = max_trained_patterns(bias*0.05)
-        print("max patterns: (bias ", bias*0.05, ") ", n)
-        trained.append(n)
+        plt.plot(biases, trained, label=f"activity={activity}")
 
-    plotCurves(
-            {"Performance": trained},
-            "bias * 0.05",
-            "max Images trained",
-            "Performance vs bias (random samples)",
-            save_file="pictures/3_6_performance_patterns_5.png",
-        )
-
-    activity = 0.01
-    trained = []
-    for bias in range(20+1):
-        n = max_trained_patterns(bias*0.05)
-        print("max patterns: (bias ", bias*0.05, ") ", n)
-        trained.append(n)
-
-    plotCurves(
-            {"Performance": trained},
-            "bias * 0.05",
-            "max Images trained",
-            "Performance vs bias (random samples)",
-            save_file="pictures/3_6_performance_patterns_1.png",
-        )
+    plt.xlabel("Bias")
+    plt.ylabel("Store Images")
+    plt.title("Store Images vs Bias (various activity)")
+    plt.legend()
+    plt.savefig("pictures/3_6_perf.png")
+    plt.show()
