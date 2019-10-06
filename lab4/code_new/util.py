@@ -148,3 +148,13 @@ def stitch_video(fig, imgs):
     import matplotlib.animation as animation
 
     return animation.ArtistAnimation(fig, imgs, interval=100, blit=True, repeat=False)
+
+
+def save_stuff(file, stuff):
+    np.savez(file, *stuff)
+
+
+def load_stuff(file):
+    container = np.load(file)
+    data = [container[key] for key in container]
+    return data

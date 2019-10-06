@@ -98,16 +98,27 @@ class RestrictedBoltzmannMachine:
 
         n_samples = visible_trainset.shape[0]
 
+        start_iter = 0
+
         try:
-            self.weight_vh = np.load("save_weights.npy")
+            # start_iter = np.load("iter.npy")
+            # self.weight_vh = np.load("save_weights.npy")
+            start_iter, self.weight_vh, self.bias_h, self.bias_v = load_stuff(
+                "save.npz"
+            )
         except FileNotFoundError:
+            print("FNF")
             pass
 
-        for it in range(n_iterations):
+        for it in range(start_iter, n_iterations):
+
+            self.T = 1 / (it + 1)
 
             for minibatch in range(1, int(visible_trainset.shape[0] / self.batch_size)):
 
-                print (f"Minibatch {minibatch}/{int(visible_trainset.shape[0] / self.batch_size)}")
+                print(
+                    f"Iter: {it} Minibatch: {minibatch}/{int(visible_trainset.shape[0] / self.batch_size)}"
+                )
 
                 # DONE [TODO TASK 4.1] run k=1 alternating Gibbs sampling : v_0 -> h_0 ->  v_1 -> h_1.
                 # you may need to use the inference functions 'get_h_given_v' and 'get_v_given_h'.
@@ -117,44 +128,35 @@ class RestrictedBoltzmannMachine:
                 v = visible_trainset[
                     (minibatch - 1) * self.batch_size : minibatch * self.batch_size, :
                 ]
-                p_hv, h = self.get_h_given_v(v)
-
-                assert (np.all(p_hv <= 1))
+                _, h = self.get_h_given_v(v)
 
                 # negative phase
-                p_vh_1, v_1 = self.get_v_given_h(h)
+                _, v_1 = self.get_v_given_h(h)
 
-                assert (np.all(p_vh_1 <= 1))
-
-                p_hv_1, h_1 = self.get_h_given_v(
-                    visible_trainset[
-                        (minibatch - 1) * self.batch_size : minibatch * self.batch_size,
-                        :,
-                    ]
-                )
-
-                assert (np.all(p_hv_1 <= 1))
-
+                p_hv_1, _ = self.get_h_given_v(v_1)
 
                 # DONE [TODO TASK 4.1] update the parameters using function 'update_params'
                 self.update_params(v, h, v_1, p_hv_1)
 
                 if minibatch % 50 == 0:
-                    np.save("save_weights.npy", self.weight_vh)
+                    save_stuff(
+                        "save.npz", [it, self.weight_vh, self.bias_h, self.bias_v]
+                    )
+                    print(
+                        "iteration=%7d recon_loss=%4.4f" % (it, np.linalg.norm(v - v_1))
+                    )
 
             # visualize once in a while when visible layer is input images
 
-            # if it % self.rf["period"] == 0 and self.is_bottom:
+            if self.is_bottom:
 
-            viz_rf(weights=self.weight_vh[:,self.rf["ids"]].reshape((self.image_size[0],self.image_size[1],-1)), it=it, grid=self.rf["grid"])
-
-            # # print progress
-
-        # if it % self.print_period == 0:
-            print(
-                "iteration=%7d recon_loss=%4.4f"
-                % (it, np.linalg.norm(visible_trainset - visible_trainset))
-            )
+                viz_rf(
+                    weights=self.weight_vh[:, self.rf["ids"]].reshape(
+                        (self.image_size[0], self.image_size[1], -1)
+                    ),
+                    it=it,
+                    grid=self.rf["grid"],
+                )
 
         return
 
@@ -177,8 +179,6 @@ class RestrictedBoltzmannMachine:
             np.matmul(np.transpose(v_0), h_0) - np.matmul(np.transpose(v_k), h_k)
         )
         self.weight_vh += self.delta_weight_vh
-
-        print (np.sum(np.abs(self.delta_weight_vh)))
 
         self.delta_bias_h = np.sum(self.learning_rate * (h_0 - h_k), axis=0)
         self.delta_bias_v = np.sum(self.learning_rate * (v_0 - v_k), axis=0)
@@ -252,7 +252,6 @@ class RestrictedBoltzmannMachine:
                 np.matmul(hidden_minibatch, self.weight_vh.T) + self.bias_v
             )
             v = np.random.binomial(1, p_v_given_h)
-
 
         return p_v_given_h, v
 
