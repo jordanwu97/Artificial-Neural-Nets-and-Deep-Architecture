@@ -153,12 +153,13 @@ if __name__ == "__main__":
         ("square", Y_SQUARE, Y_SQUARE_VAL, 25, 0.4),
     ]:
 
+        y, y_val = getNoisy(np.array([y, y_val]))
+
         plt.plot(X_VAL, y_val, "--", label=f"true ({name})")
 
         # MLP
 
         N = len(X)
-        # y, y_val = getNoisy(np.array([y, y_val]))
         n = MLPRegressor(
             hidden_layer_sizes=(10,),
             random_state=1,
@@ -178,7 +179,11 @@ if __name__ == "__main__":
         n.train_batch(X, y)
         pred = n.predict(X_VAL)
         mse = mean_squared_error(y_val, pred)
-        plt.plot(X_VAL, pred, label=f"RBF (units={rbfs_units},var={rbfs_var}) ({name}) mse={mse}")
+        plt.plot(
+            X_VAL,
+            pred,
+            label=f"RBF (units={rbfs_units},var={rbfs_var}) ({name}) mse={mse}",
+        )
 
     plt.title("Regressor Performance\n")
     plt.legend()
