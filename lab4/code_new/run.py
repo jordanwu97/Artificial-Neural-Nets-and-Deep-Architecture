@@ -13,17 +13,22 @@ if __name__ == "__main__":
 
     print("\nStarting a Restricted Boltzmann Machine..")
 
-    rbm = RestrictedBoltzmannMachine(
-        ndim_visible=image_size[0] * image_size[1],
-        ndim_hidden=500,
-        is_bottom=True,
-        image_size=image_size,
-        is_top=False,
-        n_labels=10,
-        batch_size=20,
-    )
+    for n_hidden in [500, 400, 300, 200]:
 
-    rbm.cd1(visible_trainset=train_imgs, n_iterations=10)
+        rbm = RestrictedBoltzmannMachine(
+            ndim_visible=image_size[0] * image_size[1],
+            ndim_hidden=n_hidden,
+            is_bottom=True,
+            image_size=image_size,
+            is_top=False,
+            n_labels=10,
+            batch_size=20,
+        )
+
+        rbm.cd1(visible_trainset=train_imgs, n_iterations=10)
+
+        save_stuff(f"savefiles/{n_hidden}_hidden_trained_params.npz", [rbm.weight_vh, rbm.bias_h, rbm.bias_v])
+
 
     exit()
     """ deep- belief net """

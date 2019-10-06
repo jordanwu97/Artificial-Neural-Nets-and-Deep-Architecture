@@ -66,7 +66,7 @@ class RestrictedBoltzmannMachine:
 
         self.weight_h_to_v = None
 
-        self.learning_rate = 0.005
+        self.learning_rate = 0.01
 
         self.momentum = 0.7
 
@@ -95,49 +95,36 @@ class RestrictedBoltzmannMachine:
 
         n_samples = visible_trainset.shape[0]
 
-        start_iter = 0
+        for it in range(0, n_iterations):
 
-        # try:
-        #     # start_iter = np.load("iter.npy")
-        #     # self.weight_vh = np.load("save_weights.npy")
-        #     start_iter, self.weight_vh, self.bias_h, self.bias_v = load_stuff(
-        #         "save.npz"
-        #     )
-        # except FileNotFoundError:
-        #     print("FNF")
-        #     pass
-
-
-        for it in range(start_iter, n_iterations):
-
+            # Shuffle data for better performance
             np.random.shuffle(visible_trainset)
 
-            for minibatch in range(1, int(visible_trainset.shape[0] / self.batch_size)):
+            for b_low in range(0, n_samples, self.batch_size):
 
                 # DONE [TODO TASK 4.1] run k=1 alternating Gibbs sampling : v_0 -> h_0 ->  v_1 -> h_1.
                 # you may need to use the inference functions 'get_h_given_v' and 'get_v_given_h'.
                 # note that inference methods returns both probabilities and activations (samples from probablities) and you may have to decide when to use what.
 
+                b_high = min(b_low + self.batch_size, n_samples)
+
                 # positive phase
-                v = visible_trainset[
-                    (minibatch - 1) * self.batch_size : minibatch * self.batch_size, :
-                ]
+                v = visible_trainset[b_low:b_high]
+                
                 p_hv_0, h_0 = self.get_h_given_v(v)
 
                 # negative phase
-                _, v_1 = self.get_v_given_h(h_0)
+                p_vh_1, v_1 = self.get_v_given_h(h_0)
 
                 p_hv_1, _ = self.get_h_given_v(v_1)
 
                 # DONE [TODO TASK 4.1] update the parameters using function 'update_params'
-                self.update_params(v, h_0, v_1, p_hv_1)
+                self.update_params(v, p_hv_0, v_1, p_hv_1)
 
-            save_stuff(
-                "save.npz", [it, self.weight_vh, self.bias_h, self.bias_v]
-            )
+            predict = self.get_v_given_h(self.get_h_given_v(visible_trainset)[1])[0]
 
             print(
-                "iteration=%7d recon_loss=%4.4f" % (it, np.linalg.norm(v - v_1))
+                "iteration=%7d recon_loss=%4.4f" % (it, np.linalg.norm(visible_trainset - predict))
             )
 
             # visualize once in a while when visible layer is input images
@@ -167,9 +154,6 @@ class RestrictedBoltzmannMachine:
            h_k: activities or probabilities of hidden layer
            all args have shape (size of mini-batch, size of respective layer)
         """
-
-        # def applyMomentum(new, old):
-        #     return (self.momentum * new) + ((1-self.momentum) * old)
 
         # [TODO TASK 4.1] get the gradients from the arguments (replace the 0s below) and update the weight and bias parameters
         self.delta_weight_vh = self.learning_rate * ((v_0.T @ h_0) - (v_k.T @ h_k))

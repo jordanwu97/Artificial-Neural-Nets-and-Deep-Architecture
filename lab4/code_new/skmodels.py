@@ -8,10 +8,8 @@ train_imgs, train_lbls, test_imgs, test_lbls = read_mnist(
 )
 
 model = BernoulliRBM(
-    n_components=500, learning_rate=0.01, batch_size=20, verbose=1, n_iter=2
+    n_components=500, learning_rate=0.01, batch_size=20, verbose=1, n_iter=10
 )
-
-model.fit(train_imgs)
 
 self = RestrictedBoltzmannMachine(
     ndim_visible=image_size[0] * image_size[1],
@@ -23,14 +21,9 @@ self = RestrictedBoltzmannMachine(
     batch_size=200,
 )
 
-weights = model.components_.T
-bias_h = model.intercept_hidden_
-bias_v = model.intercept_visible_
+model.fit(train_imgs)
 
-h = sample_binary(sigmoid(train_imgs @ weights + bias_h))
+h = sample_binary(sigmoid(train_imgs @ model.components_.T + model.intercept_hidden_))
+p_v = sigmoid(h @ model.components_ + model.intercept_visible_)
 
-v_1 = sample_binary(sigmoid(h @ weights.T + bias_v))
-
-print(np.sum(v_1 == train_imgs) / np.sum(v_1 == v_1))
-
-# viz_rf(weights=weights[:,self.rf["ids"]].reshape((self.image_size[0],self.image_size[1],-1)), it=2000, grid=self.rf["grid"])
+print (np.linalg.norm(train_imgs - p_v))
