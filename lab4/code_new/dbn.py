@@ -85,11 +85,18 @@ class DeepBeliefNet:
         # and read out the labels (replace pass below and 'predicted_lbl' to your predicted labels).
         # NOTE : inferring entire train/test set may require too much compute memory (depends on your system). In that case, divide into mini-batches.
 
+        # Drive from bottom to pen
+        _, hid_out = self.rbm_stack["vis--hid"].get_h_given_v_dir(vis)
+        _, pen_out = self.rbm_stack["hid--pen"].get_h_given_v_dir(hid_out)
+
+        top_v = np.hstack((pen_out,lbl))
+
+        # Run Gibbs sampling on top layer
         for _ in range(self.n_gibbs_recog):
+            _, top_h = self.rbm_stack["pen+lbl--top"].get_h_given_v(top_v)
+            _, top_v = self.rbm_stack["pen+lbl--top"].get_v_given_h(top_h)
 
-            pass
-
-        predicted_lbl = np.zeros(true_lbl.shape)
+        predicted_lbl = top_v[:,-len(lbl):]
 
         print(
             "accuracy = %.2f%%"
@@ -162,7 +169,7 @@ class DeepBeliefNet:
         """
 
         try:
-
+            raise IOError
             self.loadfromfile_rbm(loc="trained_rbm", name="vis--hid")
             self.rbm_stack["vis--hid"].untwine_weights()
 
@@ -176,23 +183,29 @@ class DeepBeliefNet:
             # [TODO TASK 4.2] use CD-1 to train all RBMs greedily
 
             print("training vis--hid")
-            """ 
-            CD-1 training for vis--hid 
-            """
+            cur_rbm = self.rbm_stack["vis--hid"]
+            cur_rbm.cd1(vis_trainset, n_iterations) 
             self.savetofile_rbm(loc="trained_rbm", name="vis--hid")
+            _, hid_h = cur_rbm.get_h_given_v(vis_trainset)
+
+            self.rbm_stack["vis--hid"].untwine_weights()
 
             print("training hid--pen")
-            self.rbm_stack["vis--hid"].untwine_weights()
-            """ 
-            CD-1 training for hid--pen 
-            """
+
+            cur_rbm = self.rbm_stack["hid--pen"]
+            cur_rbm.cd1(hid_h, n_iterations)
             self.savetofile_rbm(loc="trained_rbm", name="hid--pen")
+            _, pen_h = cur_rbm.get_h_given_v(hid_h)
+            
+            self.rbm_stack["hid--pen"].untwine_weights()
 
             print("training pen+lbl--top")
-            self.rbm_stack["hid--pen"].untwine_weights()
-            """ 
-            CD-1 training for pen+lbl--top 
-            """
+            # Concat pen's output with labels
+            data_pen_lbl = np.hstack((pen_h, lbl_trainset))
+
+            cur_rbm = self.rbm_stack["pen+lbl--top"]
+            cur_rbm.cd1(data_pen_lbl, n_iterations)
+
             self.savetofile_rbm(loc="trained_rbm", name="pen+lbl--top")
 
         return
