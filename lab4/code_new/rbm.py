@@ -1,5 +1,5 @@
 from util import *
-
+from sklearn.metrics import mean_squared_error
 
 class RestrictedBoltzmannMachine:
     """
@@ -126,7 +126,7 @@ class RestrictedBoltzmannMachine:
             reconstruct = self.get_v_given_h(self.get_h_given_v(vis_trainset_shuffled)[1])[0]
 
             print(
-                "iteration=%7d recon_loss=%4.4f" % (it, np.linalg.norm(vis_trainset_shuffled - reconstruct)/n_samples)
+                "iteration=%7d recon_loss=%4.4f" % (it, mean_squared_error(vis_trainset_shuffled, reconstruct))
             )
 
             # visualize once in a while when visible layer is input images

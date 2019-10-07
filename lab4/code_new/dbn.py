@@ -81,23 +81,28 @@ class DeepBeliefNet:
             np.ones(true_lbl.shape) / 10.0
         )  # start the net by telling you know nothing about labels
 
+        num_labels = lbl.shape[1]
+
         # [TODO TASK 4.2] fix the image data in the visible layer and drive the network bottom to top. In the top RBM, run alternating Gibbs sampling \
         # and read out the labels (replace pass below and 'predicted_lbl' to your predicted labels).
         # NOTE : inferring entire train/test set may require too much compute memory (depends on your system). In that case, divide into mini-batches.
 
         # Drive from bottom to pen
-        _, hid_out = self.rbm_stack["vis--hid"].get_h_given_v_dir(vis)
-        _, pen_out = self.rbm_stack["hid--pen"].get_h_given_v_dir(hid_out)
+        p_hid, _ = self.rbm_stack["vis--hid"].get_h_given_v_dir(vis)
+        p_pen, _ = self.rbm_stack["hid--pen"].get_h_given_v_dir(p_hid)
 
-        top_v = np.hstack((pen_out,lbl))
+        top_v = np.hstack((np.ndarray(p_pen.shape),lbl))
 
         # Run Gibbs sampling on top layer
         for _ in range(self.n_gibbs_recog):
+            
+            print ("gibbs:", _)            
+            # Clamp "Image" (copy in "image" from previous rbm)
+            top_v[:,:-num_labels] = p_pen
             _, top_h = self.rbm_stack["pen+lbl--top"].get_h_given_v(top_v)
             _, top_v = self.rbm_stack["pen+lbl--top"].get_v_given_h(top_h)
 
-        predicted_lbl = top_v[:,-len(lbl):]
-
+        predicted_lbl = top_v[:,-num_labels:]
         print(
             "accuracy = %.2f%%"
             % (
@@ -169,7 +174,7 @@ class DeepBeliefNet:
         """
 
         try:
-            raise IOError
+            
             self.loadfromfile_rbm(loc="trained_rbm", name="vis--hid")
             self.rbm_stack["vis--hid"].untwine_weights()
 
@@ -186,22 +191,22 @@ class DeepBeliefNet:
             cur_rbm = self.rbm_stack["vis--hid"]
             cur_rbm.cd1(vis_trainset, n_iterations) 
             self.savetofile_rbm(loc="trained_rbm", name="vis--hid")
-            _, hid_h = cur_rbm.get_h_given_v(vis_trainset)
+            p_hid, _ = cur_rbm.get_h_given_v(vis_trainset)
 
             self.rbm_stack["vis--hid"].untwine_weights()
 
             print("training hid--pen")
 
             cur_rbm = self.rbm_stack["hid--pen"]
-            cur_rbm.cd1(hid_h, n_iterations)
+            cur_rbm.cd1(p_hid, n_iterations)
             self.savetofile_rbm(loc="trained_rbm", name="hid--pen")
-            _, pen_h = cur_rbm.get_h_given_v(hid_h)
+            p_pen, _ = cur_rbm.get_h_given_v(p_hid)
             
             self.rbm_stack["hid--pen"].untwine_weights()
 
             print("training pen+lbl--top")
             # Concat pen's output with labels
-            data_pen_lbl = np.hstack((pen_h, lbl_trainset))
+            data_pen_lbl = np.hstack((p_pen, lbl_trainset))
 
             cur_rbm = self.rbm_stack["pen+lbl--top"]
             cur_rbm.cd1(data_pen_lbl, n_iterations)
