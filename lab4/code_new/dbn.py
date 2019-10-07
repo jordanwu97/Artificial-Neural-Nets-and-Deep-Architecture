@@ -95,8 +95,6 @@ class DeepBeliefNet:
 
         # Run Gibbs sampling on top layer
         for _ in range(self.n_gibbs_recog):
-            
-            print ("gibbs:", _)            
             # Clamp "Image" (copy in "image" from previous rbm)
             top_v[:,:-num_labels] = p_pen
             _, top_h = self.rbm_stack["pen+lbl--top"].get_h_given_v(top_v)
@@ -134,29 +132,53 @@ class DeepBeliefNet:
 
         lbl = true_lbl
 
+        num_label = lbl.shape[1]
+
+        top = self.rbm_stack["pen+lbl--top"]
+        pen = self.rbm_stack["hid--pen"]
+        hid = self.rbm_stack["vis--hid"]
+        
+        top_v = np.hstack(([top.bias_v[:-num_label]], lbl))
+
         # [TODO TASK 4.2] fix the label in the label layer and run alternating Gibbs sampling in the top RBM. From the top RBM, drive the network \
         # top to the bottom visible layer (replace 'vis' from random to your generated visible layer).
 
-        for _ in range(self.n_gibbs_gener):
+        for _ in range(1000):
 
-            vis = np.random.rand(n_sample, self.sizes["vis"])
+            top_v[:,-num_label:] = lbl
 
-            records.append(
-                [
-                    ax.imshow(
-                        vis.reshape(self.image_size),
-                        cmap="bwr",
-                        vmin=0,
-                        vmax=1,
-                        animated=True,
-                        interpolation=None,
-                    )
-                ]
-            )
+            p_top_h, top_h = top.get_h_given_v(top_v)
+            _, top_v = top.get_v_given_h(top_h)
 
-        anim = stitch_video(fig, records).save(
-            "%s.generate%d.mp4" % (name, np.argmax(true_lbl))
-        )
+        
+        # vis = np.zeros((1,self.sizes["vis"]))
+
+        s = 100
+        for _ in range(s):
+            _, top_v = top.get_v_given_h(p_top_h)
+            _, pen_v = pen.get_v_given_h_dir(top_v[:,:-num_label])
+            _, vis = hid.get_v_given_h_dir(pen_v)
+            # vis = np.log(vis)
+            plt.imshow(vis.reshape(28,28))
+            plt.show(block=False)
+            plt.pause(0.01)
+            
+        #     records.append(
+        #         [
+        #             ax.imshow(
+        #                 vis.reshape(self.image_size),
+        #                 cmap="bwr",
+        #                 vmin=0,
+        #                 vmax=1,
+        #                 animated=True,
+        #                 interpolation=None,
+        #             )
+        #         ]
+        #     )
+
+        # anim = stitch_video(fig, records).save(
+        #     "%s.generate%d.mp4" % (name, np.argmax(true_lbl))
+        # )
 
         return
 
