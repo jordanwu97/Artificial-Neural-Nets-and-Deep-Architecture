@@ -133,35 +133,58 @@ class DeepBeliefNet:
         lbl = true_lbl
 
         num_label = lbl.shape[1]
+        
+        # [TODO TASK 4.2] fix the label in the label layer and run alternating Gibbs sampling in the top RBM. From the top RBM, drive the network \
+        # top to the bottom visible layer (replace 'vis' from random to your generated visible layer).
 
         top = self.rbm_stack["pen+lbl--top"]
         pen = self.rbm_stack["hid--pen"]
         hid = self.rbm_stack["vis--hid"]
         
-        top_v = np.hstack(([top.bias_v[:-num_label]], lbl))
+        p_top_v = np.random.normal(0, 0.01, (lbl.shape[0],top.bias_v.shape[0]))
 
-        # [TODO TASK 4.2] fix the label in the label layer and run alternating Gibbs sampling in the top RBM. From the top RBM, drive the network \
-        # top to the bottom visible layer (replace 'vis' from random to your generated visible layer).
+        top_v = np.copy([-1*top.bias_v])
+        top_v = sample_binary(top_v)
 
-        for _ in range(1000):
-
+        for it in range(self.n_gibbs_gener):
+            p_top_v[:,-num_label:] = lbl
             top_v[:,-num_label:] = lbl
 
             p_top_h, top_h = top.get_h_given_v(top_v)
-            _, top_v = top.get_v_given_h(top_h)
-
+            p_top_v, top_v = top.get_v_given_h(top_h)
+            
         
-        # vis = np.zeros((1,self.sizes["vis"]))
+            # if it < 10 or it > 990:
+            #     if type(last) != int:
+            #         print (it, )
+                # if it == 991:
+                #     print ("991")
+                # plt.clf()
+                # plt.imshow(np.log(p_top_v[:,:-num_label]).reshape(10,50))
+                # # plt.imshow(np.log(p_top_h).reshape(50,40))
+                # plt.show(block=False)
+                # plt.pause(0.01)
 
-        s = 100
-        for _ in range(s):
-            _, top_v = top.get_v_given_h(p_top_h)
+        # s = 100
+
+        v = np.zeros((28,28))
+
+        for _ in range(100):
+            top_h = sample_binary(p_top_h)
+            _, top_v = top.get_v_given_h(top_h)
             _, pen_v = pen.get_v_given_h_dir(top_v[:,:-num_label])
-            _, vis = hid.get_v_given_h_dir(pen_v)
+            # p_top_v, _ = top.get_v_given_h(p_top_h)
+            # p_pen_v, _ = pen.get_v_given_h_dir(p_top_v[:,:-num_label])
+            vis, _ = hid.get_v_given_h_dir(pen_v)
             # vis = np.log(vis)
-            plt.imshow(vis.reshape(28,28))
-            plt.show(block=False)
-            plt.pause(0.01)
+            v += vis.reshape(28,28)
+        
+        plt.clf()
+        plt.imshow(v)
+        # plt.show(block=False)
+        # plt.pause(0.01)
+        plt.show()
+        # exit()
             
         #     records.append(
         #         [

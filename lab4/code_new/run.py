@@ -57,11 +57,13 @@ if __name__ == "__main__":
 
     # dbn.recognize(test_imgs, test_lbls)
 
-    for digit in range(10):
+    for digit in range(1,10):
         digit_1hot = np.zeros(shape=(1, 10))
         digit_1hot[0, digit] = 1
+        print (digit_1hot)
         dbn.generate(digit_1hot, name="rbms")
         
+    exit()
     """ fine-tune wake-sleep training """
 
     dbn.train_wakesleep_finetune(
