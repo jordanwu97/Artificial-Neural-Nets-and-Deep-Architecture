@@ -324,12 +324,12 @@ class RestrictedBoltzmannMachine:
            preds: activities or probabilities of output unit (prediction)
            all args have shape (size of mini-batch, size of respective layer)
         """
-
+        num_samples = inps.shape[0]
         # [TODO TASK 4.3] find the gradients from the arguments (replace the 0s below) and update the weight and bias parameters.
 
-        self.delta_weight_h_to_v += 0
-        self.delta_bias_v += 0
-
+        self.delta_weight_h_to_v = (20 * self.learning_rate / num_samples) * inps.T @ (trgs - preds)
+        self.delta_bias_v = (20 * self.learning_rate / num_samples) * (np.sum(trgs, axis=0) - np.sum(preds, axis=0))
+        
         self.weight_h_to_v += self.delta_weight_h_to_v
         self.bias_v += self.delta_bias_v
 
@@ -346,11 +346,13 @@ class RestrictedBoltzmannMachine:
            all args have shape (size of mini-batch, size of respective layer)
         """
 
+        num_samples = inps.shape[0]
+
         # [TODO TASK 4.3] find the gradients from the arguments (replace the 0s below) and update the weight and bias parameters.
 
-        self.delta_weight_v_to_h += 0
-        self.delta_bias_h += 0
-
+        self.delta_weight_v_to_h = (20 * self.learning_rate / num_samples) * inps.T @ (trgs - preds)
+        self.delta_bias_h = (20 * self.learning_rate / num_samples) * (np.sum(trgs, axis=0) - np.sum(preds, axis=0))
+        
         self.weight_v_to_h += self.delta_weight_v_to_h
         self.bias_h += self.delta_bias_h
 
