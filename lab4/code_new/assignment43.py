@@ -13,4 +13,6 @@ if __name__ == "__main__":
     
     dbn: DeepBeliefNet = load("savefiles/dbn_greedy.pkl")
 
-    dbn.recognize(test_imgs, test_lbls)
+    dbn.train_wakesleep_finetune(train_imgs, train_lbls, 10)
+
+    save(dbn, "savefiles/dbn_fine_tuned.pkl")
