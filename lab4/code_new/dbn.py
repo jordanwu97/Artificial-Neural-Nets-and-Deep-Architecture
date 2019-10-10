@@ -101,14 +101,9 @@ class DeepBeliefNet:
             _, top_v = self.rbm_stack["pen+lbl--top"].get_v_given_h(top_h)
 
         predicted_lbl = top_v[:,-num_labels:]
-	accuracy = 100.0 * np.mean(np.argmax(predicted_lbl, axis=1) == np.argmax(true_lbl, axis=1)
+        accuracy = 100.0 * np.mean(np.argmax(predicted_lbl, axis=1) == np.argmax(true_lbl, axis=1)
 	
-        print(
-            "accuracy = %.2f%%"
-            % (accuracy
-                )
-            )
-        )
+        print("accuracy = %.2f%%" % (accuracy))
 
         return accuracy
 
@@ -288,13 +283,13 @@ class DeepBeliefNet:
             hid_pen = self.rbm_stack["hid--pen"]
             penlbl_top = self.rbm_stack["pen+lbl--top"]
 
-	    accuracy = []
+            accuracy = []
 
             for it in range(n_iterations):
 
                 print("iteration=%7d" % it)
 
-                for b_low in range(0, self.n_samples - self.batch_size, self.batch_size):
+                for b_low in range(0, self.n_samples, self.batch_size):
                     print (b_low)
                     vis_batch = vis_trainset[b_low:b_low+self.batch_size]
                     lbl_batch = lbl_trainset[b_low:b_low+self.batch_size]
@@ -353,13 +348,13 @@ class DeepBeliefNet:
                 # if it % self.print_period == 0:
 
 	    np.save("trained_dbn/accuracy_reco_finetune", accuracy)
-	    plt.clf()
-	    plt.plot(accuracy)
-	    plt.show()	    
+        plt.clf()
+        plt.plot(accuracy)
+        plt.show()
 
-            self.savetofile_dbn(loc="trained_dbn", name="vis--hid")
-            self.savetofile_dbn(loc="trained_dbn", name="hid--pen")
-            self.savetofile_rbm(loc="trained_dbn", name="pen+lbl--top")
+        self.savetofile_dbn(loc="trained_dbn", name="vis--hid")
+        self.savetofile_dbn(loc="trained_dbn", name="hid--pen")
+        self.savetofile_rbm(loc="trained_dbn", name="pen+lbl--top")
 
         return
 
