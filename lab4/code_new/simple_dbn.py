@@ -203,6 +203,8 @@ if __name__ == "__main__":
         rbm1.cd1(p_1_v, 10)
         saveWeights(rbm1, "simple_rbm_0", "1")
 
+    save([rbm0, rbm1], "savefiles/simpledbn_greedy.pkl")
+
     print("recognizing...")
     acc = []
     for i in range(5):

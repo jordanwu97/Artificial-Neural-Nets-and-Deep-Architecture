@@ -13,6 +13,10 @@ if __name__ == "__main__":
     
     dbn: DeepBeliefNet = load("savefiles/dbn_greedy.pkl")
 
-    dbn.train_wakesleep_finetune(train_imgs, train_lbls, 10)
+    try:
+        dbn: DeepBeliefNet = load("savefiles/dbn_fine_tuned.pkl")
+    except IOError:
+        dbn.train_wakesleep_finetune(train_imgs, train_lbls, 10)
+        save(dbn, "savefiles/dbn_fine_tuned.pkl")
 
-    save(dbn, "savefiles/dbn_fine_tuned.pkl")
+    ## Fine tuning is done by here

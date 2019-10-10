@@ -56,3 +56,5 @@ if __name__ == "__main__":
     #         print (name, acc[-1])
 
     #     print (f"{name} & {np.mean(acc):.5f} & {np.std(acc):.5f}")
+
+    ### DO IMAGE GEN HERE!
