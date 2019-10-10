@@ -101,17 +101,11 @@ class DeepBeliefNet:
             _, top_v = self.rbm_stack["pen+lbl--top"].get_v_given_h(top_h)
 
         predicted_lbl = top_v[:,-num_labels:]
-        print(
-            "accuracy = %.2f%%"
-            % (
-                100.0
-                * np.mean(
-                    np.argmax(predicted_lbl, axis=1) == np.argmax(true_lbl, axis=1)
-                )
-            )
-        )
+        accuracy = 100.0 * np.mean(np.argmax(predicted_lbl, axis=1) == np.argmax(true_lbl, axis=1)
+	
+        print("accuracy = %.2f%%" % (accuracy))
 
-        return
+        return accuracy
 
     def generate(self, true_lbl, name):
 
@@ -176,15 +170,15 @@ class DeepBeliefNet:
             # p_top_v, _ = top.get_v_given_h(p_top_h)
             # p_pen_v, _ = pen.get_v_given_h_dir(p_top_v[:,:-num_label])
             vis, _ = hid.get_v_given_h_dir(pen_v)
-            # vis = np.log(vis)
+            vis = np.log(vis)
             v += vis.reshape(28,28)
         
-        plt.clf()
-        plt.imshow(v)
-        # plt.show(block=False)
-        # plt.pause(0.01)
-        plt.show()
-        # exit()
+            plt.clf()
+            plt.imshow(v)
+            plt.show(block=False)
+            plt.pause(0.001)
+            #plt.show()
+            # exit()
             
         #     records.append(
         #         [
@@ -289,11 +283,13 @@ class DeepBeliefNet:
             hid_pen = self.rbm_stack["hid--pen"]
             penlbl_top = self.rbm_stack["pen+lbl--top"]
 
+            accuracy = []
+
             for it in range(n_iterations):
 
                 print("iteration=%7d" % it)
 
-                for b_low in range(0, self.n_samples - self.batch_size, self.batch_size):
+                for b_low in range(0, self.n_samples, self.batch_size):
                     print (b_low)
                     vis_batch = vis_trainset[b_low:b_low+self.batch_size]
                     lbl_batch = lbl_trainset[b_low:b_low+self.batch_size]
@@ -343,16 +339,22 @@ class DeepBeliefNet:
 
                     # [TODO TASK 4.3] update generative parameters : here you will only use 'update_recognize_params' method from rbm class.
 
-                    # vis_hid.update_recognize_params(sleep_p_vis, sleep_p_hid_h, rec_p_hid_h)
-                    # hid_pen.update_recognize_params(sleep_p_hid_h, sleep_p_pen_h, rec_p_pen_h)
+                    vis_hid.update_recognize_params(sleep_s_vis, sleep_p_hid_h, rec_p_hid_h)
+                    hid_pen.update_recognize_params(sleep_p_hid_h, sleep_p_pen_h, rec_p_pen_h)
 
-                self.recognize(vis_batch, lbl_batch)
+                    #self.recognize(vis_batch, lbl_batch)
+                accuracy.append(self.recognize(vis_trainset, lbl_trainset))
 
                 # if it % self.print_period == 0:
 
-            self.savetofile_dbn(loc="trained_dbn", name="vis--hid")
-            self.savetofile_dbn(loc="trained_dbn", name="hid--pen")
-            self.savetofile_rbm(loc="trained_dbn", name="pen+lbl--top")
+	    np.save("trained_dbn/accuracy_reco_finetune", accuracy)
+        plt.clf()
+        plt.plot(accuracy)
+        plt.show()
+
+        self.savetofile_dbn(loc="trained_dbn", name="vis--hid")
+        self.savetofile_dbn(loc="trained_dbn", name="hid--pen")
+        self.savetofile_rbm(loc="trained_dbn", name="pen+lbl--top")
 
         return
 
