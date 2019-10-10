@@ -294,6 +294,8 @@ class DeepBeliefNet:
                     vis_batch = vis_trainset[b_low:b_low+self.batch_size]
                     lbl_batch = lbl_trainset[b_low:b_low+self.batch_size]
 
+                    print (self.recognize(vis_batch, lbl_batch))
+
                     # vis -> wake_s_hid_h -> wake_s_pen_h / wake_s_top_v -> wake_s_top_h
                     # sleep_vis <- sleep_s_hid_h <- sleep_s_pen_h / sleep_s_top_v <- wake_s_top_h
 
@@ -339,22 +341,24 @@ class DeepBeliefNet:
 
                     # [TODO TASK 4.3] update generative parameters : here you will only use 'update_recognize_params' method from rbm class.
 
-                    vis_hid.update_recognize_params(sleep_s_vis, sleep_p_hid_h, rec_p_hid_h)
-                    hid_pen.update_recognize_params(sleep_p_hid_h, sleep_p_pen_h, rec_p_pen_h)
+                    # vis_hid.update_recognize_params(sleep_s_vis, sleep_p_hid_h, rec_p_hid_h)
+                    # hid_pen.update_recognize_params(sleep_p_hid_h, sleep_p_pen_h, rec_p_pen_h)
+
 
                     #self.recognize(vis_batch, lbl_batch)
-                accuracy.append(self.recognize(vis_trainset, lbl_trainset))
+                # accuracy.append(self.recognize(vis_trainset[:1000], lbl_trainset[:1000]))
+                # print (accuracy[-1])
 
                 # if it % self.print_period == 0:
 
-        np.save("trained_dbn/accuracy_reco_finetune", accuracy)
-        plt.clf()
-        plt.plot(accuracy)
-        plt.show()
+        # np.save("trained_dbn/accuracy_reco_finetune", accuracy)
+        # plt.clf()
+        # plt.plot(accuracy)
+        # plt.show()
 
-        self.savetofile_dbn(loc="trained_dbn", name="vis--hid")
-        self.savetofile_dbn(loc="trained_dbn", name="hid--pen")
-        self.savetofile_rbm(loc="trained_dbn", name="pen+lbl--top")
+            self.savetofile_dbn(loc="trained_dbn", name="vis--hid")
+            self.savetofile_dbn(loc="trained_dbn", name="hid--pen")
+            self.savetofile_rbm(loc="trained_dbn", name="pen+lbl--top")
 
         return
 

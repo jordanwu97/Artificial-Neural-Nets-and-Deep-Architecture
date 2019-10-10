@@ -36,21 +36,23 @@ if __name__ == "__main__":
 
         pickle.dump(dbn, open("savefiles/dbn_greedy.pkl", "wb"))
 
-    # for name, rbm in dbn.rbm_stack.items():
-    #     plt.plot(range(len(rbm.recon_losses)), rbm.recon_losses, label=f"{name}")
-    #     plt.annotate(f"{rbm.recon_losses[-1]:.5f}", (len(rbm.recon_losses) - 1,rbm.recon_losses[-1]))
+    dbn.recognize(train_imgs[:100], train_lbls[:100])    
 
-    # plt.xlim(-0.5, len(rbm.recon_losses) + 0.5)
-    # plt.title("Layers Recon Loss")
-    # plt.ylabel("Reconstruction Loss")
-    # plt.xlabel("# Epochs")
-    # plt.legend()
-    # plt.savefig("pictures/4_2_recon_losses.png")
+    for name, rbm in dbn.rbm_stack.items():
+        plt.plot(range(len(rbm.recon_losses)), rbm.recon_losses, label=f"{name}")
+        plt.annotate(f"{rbm.recon_losses[-1]:.5f}", (len(rbm.recon_losses) - 1,rbm.recon_losses[-1]))
 
-    for name, im, lb in [("train", train_imgs, train_lbls), ("test", test_imgs, test_lbls)]:
-        acc = []
-        for trials in range(10):
-            acc.append(dbn.recognize(train_imgs, train_lbls))
-            print (name, acc[-1])
+    plt.xlim(-0.5, len(rbm.recon_losses) + 0.5)
+    plt.title("Layers Recon Loss")
+    plt.ylabel("Reconstruction Loss")
+    plt.xlabel("# Epochs")
+    plt.legend()
+    plt.savefig("pictures/4_2_recon_losses.png")
 
-        print (f"{name} & {np.mean(acc):.5f} & {np.std(acc):.5f}")
+    # for name, im, lb in [("train", train_imgs, train_lbls), ("test", test_imgs, test_lbls)]:
+    #     acc = []
+    #     for trials in range(10):
+    #         acc.append(dbn.recognize(train_imgs, train_lbls))
+    #         print (name, acc[-1])
+
+    #     print (f"{name} & {np.mean(acc):.5f} & {np.std(acc):.5f}")
