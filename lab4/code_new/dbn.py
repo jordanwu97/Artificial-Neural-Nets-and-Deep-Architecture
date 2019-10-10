@@ -303,9 +303,9 @@ class DeepBeliefNet:
 
                     # [TODO TASK 4.3] wake-phase : drive the network bottom to top using fixing the visible and label data.
                     wake_p_hid_h, wake_s_hid_h = vis_hid.get_h_given_v_dir(vis_batch)
-                    wake_p_pen_h, wake_s_pen_h = hid_pen.get_h_given_v_dir(wake_s_hid_h)
+                    wake_p_pen_h, wake_s_pen_h = hid_pen.get_h_given_v_dir(wake_p_hid_h)
 
-                    wake_s_top_v = np.hstack((wake_s_pen_h, lbl_batch))
+                    wake_s_top_v = np.hstack((wake_p_pen_h, lbl_batch))
                     wake_s_top_v_0 = np.copy(wake_s_top_v)
                     
                     wake_p_top_h, wake_s_top_h = penlbl_top.get_h_given_v(wake_s_top_v)
@@ -318,10 +318,9 @@ class DeepBeliefNet:
 
 
                     # [TODO TASK 4.3] sleep phase : from the activities in the top RBM, drive the network top to bottom.
-                    sleep_p_pen_h = wake_p_top_v[:,:-num_labels]
-                    sleep_s_pen_h = wake_s_top_v[:,:-num_labels]
-                    sleep_p_hid_h, sleep_s_hid_h = hid_pen.get_v_given_h_dir(sleep_s_pen_h)
-                    sleep_p_vis, sleep_s_vis = vis_hid.get_v_given_h_dir(sleep_s_hid_h) 
+                    sleep_p_pen_h, sleep_s_pen_h = wake_p_top_v[:,:-num_labels], wake_s_top_v[:,:-num_labels]
+                    sleep_p_hid_h, sleep_s_hid_h = hid_pen.get_v_given_h_dir(sleep_p_pen_h)
+                    sleep_p_vis, sleep_s_vis = vis_hid.get_v_given_h_dir(sleep_p_hid_h) 
 
 
                     # [TODO TASK 4.3] compute predictions : compute generative predictions from wake-phase activations, and recognize predictions from sleep-phase activations.
@@ -330,13 +329,13 @@ class DeepBeliefNet:
                     gen_p_hid_v, _ = vis_hid.get_v_given_h_dir(wake_s_hid_h)
                     gen_p_pen_v, _ = hid_pen.get_v_given_h_dir(wake_s_pen_h)
 
-                    rec_p_hid_h, _ = vis_hid.get_h_given_v_dir(sleep_s_vis)
-                    rec_p_pen_h, _ = hid_pen.get_h_given_v_dir(sleep_s_hid_h)
+                    rec_p_hid_h, _ = vis_hid.get_h_given_v_dir(sleep_p_vis)
+                    rec_p_pen_h, _ = hid_pen.get_h_given_v_dir(sleep_p_hid_h)
 
                     # [TODO TASK 4.3] update generative parameters : here you will only use 'update_generate_params' method from rbm class.
 
-                    vis_hid.update_generate_params(wake_s_hid_h, vis_batch, gen_p_hid_v)
-                    hid_pen.update_generate_params(wake_s_pen_h, wake_p_hid_h, gen_p_pen_v)
+                    # vis_hid.update_generate_params(wake_s_hid_h, vis_batch, gen_p_hid_v)
+                    # hid_pen.update_generate_params(wake_s_pen_h, wake_p_hid_h, gen_p_pen_v)
 
                     # [TODO TASK 4.3] update parameters of top rbm : here you will only use 'update_params' method from rbm class.
 
@@ -344,10 +343,10 @@ class DeepBeliefNet:
 
                     # [TODO TASK 4.3] update generative parameters : here you will only use 'update_recognize_params' method from rbm class.
 
-                    vis_hid.update_recognize_params(sleep_s_vis, sleep_p_hid_h, rec_p_hid_h)
-                    hid_pen.update_recognize_params(sleep_s_hid_h, sleep_p_pen_h, rec_p_pen_h)
+                    # vis_hid.update_recognize_params(sleep_p_vis, sleep_p_hid_h, rec_p_hid_h)
+                    # hid_pen.update_recognize_params(sleep_p_hid_h, sleep_p_pen_h, rec_p_pen_h)
 
-                self.recognize(vis_trainset, lbl_trainset)
+                self.recognize(vis_batch, lbl_batch)
 
                 # if it % self.print_period == 0:
 
