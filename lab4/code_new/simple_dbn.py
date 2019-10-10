@@ -2,7 +2,7 @@ from util import *
 from rbm import RestrictedBoltzmannMachine
 
 
-def loadfromfile_dbn(self, loc, name, rbm):
+def loadfromfile_dbn(loc, name, rbm):
     rbm.weight_v_to_h = np.load(
         "%s/rbm.%s.weight_v_to_h.npy" % (loc, name)
     )
@@ -15,7 +15,7 @@ def loadfromfile_dbn(self, loc, name, rbm):
     return
 
 
-def savetofile_dbn(self, loc, name, rbm):
+def savetofile_dbn(loc, name, rbm):
     np.save(
         "%s/rbm.%s.weight_v_to_h" % (loc, name), rbm.weight_v_to_h
     )
@@ -65,7 +65,7 @@ def recognize(rbm0, rbm1, input_data, true_lbl):
         )
     )
 
-def train_wakesleep_finetune(self, rbm0, rbm1, vis_trainset, lbl_trainset, n_iterations, name):
+def train_wakesleep_finetune(rbm0, rbm1, test_imgs, test_lbls, vis_trainset, lbl_trainset, n_iterations, name):
 
         """
         Wake-sleep method for learning all the parameters of network.
@@ -77,31 +77,34 @@ def train_wakesleep_finetune(self, rbm0, rbm1, vis_trainset, lbl_trainset, n_ite
           n_iterations: number of iterations of learning (each iteration learns a mini-batch)
         """
 
+        batch_size=200
+        n_gibbs_wakesleep=5
         print("\ntraining wake-sleep..")
 
         try:
             raise IOError
-            self.loadfromfile_dbn(loc="trained_dbn", name="0", rbm0)
-            self.loadfromfile_dbn(loc="trained_dbn", name="1", rbm1)
+            loadfromfile_dbn(loc="trained_dbn", name="0", rbm=rbm0)
+            loadfromfile_dbn(loc="trained_dbn", name="1", rbm=rbm1)
 
         except IOError:
 
-            self.n_samples = vis_trainset.shape[0]
+            n_samples = vis_trainset.shape[0]
             num_labels = lbl_trainset.shape[1]
 
             vis_hid = rbm0
             penlbl_top = rbm1
 
             accuracy = []
+            accuracy.append(recognize(rbm0, rbm1, test_imgs, test_lbls))
 
             for it in range(n_iterations):
 
                 print("iteration=%7d" % it)
 
-                for b_low in range(0, self.n_samples, self.batch_size):
+                for b_low in range(0, n_samples, batch_size):
                     print(b_low)
-                    vis_batch = vis_trainset[b_low:b_low + self.batch_size]
-                    lbl_batch = lbl_trainset[b_low:b_low + self.batch_size]
+                    vis_batch = vis_trainset[b_low:b_low + batch_size]
+                    lbl_batch = lbl_trainset[b_low:b_low + batch_size]
 
                     # vis -> wake_s_hid_h -> wake_s_pen_h / wake_s_top_v -> wake_s_top_h
                     # sleep_vis <- sleep_s_hid_h <- sleep_s_pen_h / sleep_s_top_v <- wake_s_top_h
@@ -116,7 +119,7 @@ def train_wakesleep_finetune(self, rbm0, rbm1, vis_trainset, lbl_trainset, n_ite
                     wake_s_top_h_0 = np.copy(wake_s_top_h)
 
                     # [TODO TASK 4.3] alternating Gibbs sampling in the top RBM for k='n_gibbs_wakesleep' steps, also store neccessary information for learning this RBM.
-                    for g_it in range(self.n_gibbs_wakesleep):
+                    for g_it in range(n_gibbs_wakesleep):
                         wake_p_top_v, wake_s_top_v = penlbl_top.get_v_given_h(wake_s_top_h)
                         wake_p_top_h, wake_s_top_h = penlbl_top.get_h_given_v(wake_s_top_v)
 
@@ -144,17 +147,17 @@ def train_wakesleep_finetune(self, rbm0, rbm1, vis_trainset, lbl_trainset, n_ite
                     vis_hid.update_recognize_params(sleep_s_vis, sleep_p_hid_h, rec_p_hid_h)
 
                     # self.recognize(vis_batch, lbl_batch)
-                accuracy.append(self.recognize(vis_trainset, lbl_trainset))
+                accuracy.append(recognize(rbm0, rbm1, test_imgs, test_lbls))
 
-                # if it % self.print_period == 0:
+                # if it % selffatal: error when closing sha1 file: Disk quota exceeded
 
         np.save(f"trained_dbn/accuracy_reco_finetune_simple_dbn_{name}", accuracy)
         plt.clf()
         plt.plot(accuracy)
         plt.show()
 
-        self.savetofile_dbn(loc="trained_dbn", name="0", rbm0)
-        self.savetofile_dbn(loc="trained_dbn", name="1", rbm1)
+        savetofile_dbn(loc="trained_dbn", name="0", rbm=rbm0)
+        savetofile_dbn(loc="trained_dbn", name="1", rbm=rbm1)
 
         return
 
@@ -211,10 +214,9 @@ if __name__ == "__main__":
         saveWeights(rbm1, "simple_rbm_0", "1")
 
     print("recognizing...")
-    recognize(rbm0, rbm1, train_imgs, train_lbls)
     recognize(rbm0, rbm1, test_imgs, test_lbls)
 
     print("finetuning...")
-    train_wakesleep_finetune(rbm0, rbm1, vis_trainset=train_imgs, lbl_trainset=train_lbls, n_iterations=10, name="trainset")
-    train_wakesleep_finetune(rbm0, rbm1, vis_trainset=test_imgs, lbl_trainset=test_lbls, n_iterations=10, name="testset")
+    train_wakesleep_finetune(rbm0, rbm1, test_imgs, test_lbls, vis_trainset=train_imgs, lbl_trainset=train_lbls, n_iterations=10, name="trainset")
+   # recognize(rbm0, rbm1, test_imgs, test_lbls)
 
