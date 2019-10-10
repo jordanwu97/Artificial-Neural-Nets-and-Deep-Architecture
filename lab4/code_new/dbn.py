@@ -176,15 +176,15 @@ class DeepBeliefNet:
             # p_top_v, _ = top.get_v_given_h(p_top_h)
             # p_pen_v, _ = pen.get_v_given_h_dir(p_top_v[:,:-num_label])
             vis, _ = hid.get_v_given_h_dir(pen_v)
-            # vis = np.log(vis)
+            vis = np.log(vis)
             v += vis.reshape(28,28)
         
-        plt.clf()
-        plt.imshow(v)
-        # plt.show(block=False)
-        # plt.pause(0.01)
-        plt.show()
-        # exit()
+            plt.clf()
+            plt.imshow(v)
+            plt.show(block=False)
+            plt.pause(0.001)
+            #plt.show()
+            # exit()
             
         #     records.append(
         #         [
@@ -343,9 +343,10 @@ class DeepBeliefNet:
 
                     # [TODO TASK 4.3] update generative parameters : here you will only use 'update_recognize_params' method from rbm class.
 
-                    # vis_hid.update_recognize_params(sleep_p_vis, sleep_p_hid_h, rec_p_hid_h)
-                    # hid_pen.update_recognize_params(sleep_p_hid_h, sleep_p_pen_h, rec_p_pen_h)
+                    vis_hid.update_recognize_params(sleep_s_vis, sleep_p_hid_h, rec_p_hid_h)
+                    hid_pen.update_recognize_params(sleep_p_hid_h, sleep_p_pen_h, rec_p_pen_h)
 
+                    #  self.recognize(vis_batch, lbl_batch)
                 self.recognize(vis_batch, lbl_batch)
 
                 # if it % self.print_period == 0:
