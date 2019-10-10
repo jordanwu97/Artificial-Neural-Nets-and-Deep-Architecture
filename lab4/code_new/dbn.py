@@ -101,9 +101,9 @@ class DeepBeliefNet:
             _, top_v = self.rbm_stack["pen+lbl--top"].get_v_given_h(top_h)
 
         predicted_lbl = top_v[:,-num_labels:]
-        accuracy = 100.0 * np.mean(np.argmax(predicted_lbl, axis=1) == np.argmax(true_lbl, axis=1)
+        accuracy = 100.0 * np.mean(np.argmax(predicted_lbl, axis=1) == np.argmax(true_lbl, axis=1))
 	
-        print("accuracy = %.2f%%" % (accuracy))
+        print (f"accuracy = {accuracy:.5f}")
 
         return accuracy
 
