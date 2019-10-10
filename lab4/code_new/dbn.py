@@ -347,7 +347,7 @@ class DeepBeliefNet:
 
                 # if it % self.print_period == 0:
 
-	    np.save("trained_dbn/accuracy_reco_finetune", accuracy)
+        np.save("trained_dbn/accuracy_reco_finetune", accuracy)
         plt.clf()
         plt.plot(accuracy)
         plt.show()
@@ -360,7 +360,7 @@ class DeepBeliefNet:
 
     def loadfromfile_rbm(self, loc, name):
 
-        self.rbm_stack[name].weight_vh = np.load(
+        self.rbm_stack[name].weigt_vhh = np.load(
             "%s/rbm.%s.weight_vh.npy" % (loc, name)
         )
         self.rbm_stack[name].bias_v = np.load("%s/rbm.%s.bias_v.npy" % (loc, name))
