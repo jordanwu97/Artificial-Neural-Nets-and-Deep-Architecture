@@ -59,8 +59,27 @@ if __name__ == "__main__":
 
     ### DO IMAGE GEN HERE!
 
-    dbn.generate(train_lbls)
-
+    labels = np.zeros([1,10])
+    labels[0,0] = 1
+    vis = dbn.generate(labels)
+    vis = vis.reshape(28,28)
+    plt.clf()
+    plt.subplot(4,5,1)
+    plt.imshow(vis)
+    plt.show(block=False)
+    plt.pause(0.1)
+    for it in range(1,10):
+        labels[0,it] = 1
+        labels[0,it-1] = 0
+        print(labels)
+        vis = dbn.generate(labels)
+        vis = vis.reshape(28,28)
+        plt.subplot(4,5,it+1)
+        plt.imshow(vis)
+        plt.show(block=False)
+        plt.pause(0.1)
+    plt.savefig("pictures/4_2_generation.png")
+    
 
 
 

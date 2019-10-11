@@ -116,8 +116,6 @@ class DeepBeliefNet:
           name: string used for saving a video of generated visible activations
         """
 
-        n_sample = true_lbl.shape[0]
-
         records = []
 
         lbl = true_lbl
@@ -130,13 +128,13 @@ class DeepBeliefNet:
         pen = self.rbm_stack["hid--pen"]
         hid = self.rbm_stack["vis--hid"]
         
-        p_top_v = np.random.uniform(0,1,(lbl.shape[0],top.bias_v.shape[0]))
+        p_top_v = np.random.uniform(0,1,(lbl.shape[0], top.bias_v.shape[0]))
         top_v = sample_binary(p_top_v)
-
+     
         for it in range(self.n_gibbs_gener):
             p_top_v[:,-num_label:] = lbl
             top_v[:,-num_label:] = lbl
-
+     
             p_top_h, top_h = top.get_h_given_v(p_top_v)
             p_top_v, top_v = top.get_v_given_h(p_top_h)
 
@@ -146,20 +144,18 @@ class DeepBeliefNet:
             top_h = sample_binary(p_top_h)
             _, top_v = top.get_v_given_h(top_h)
             _, pen_v = pen.get_v_given_h_dir(top_v[:,:-num_label])
-            # p_top_v, _ = top.get_v_given_h(p_top_h)
-            # p_pen_v, _ = pen.get_v_given_h_dir(p_top_v[:,:-num_label])
             vis, _ = hid.get_v_given_h_dir(pen_v)
-            vis = np.log(vis)
+            #vis = np.log(vis)
             v += vis.reshape(28,28)
         
-            plt.clf()
-            plt.imshow(v)
-            plt.show(block=False)
-            plt.pause(0.001)
+            #plt.clf()
+            #plt.imshow(v)
+            #plt.show(block=False)
+            #plt.pause(0.001)
             #plt.show()
             # exit()
             
-        return
+        return vis
 
     def train_greedylayerwise(self, vis_trainset, lbl_trainset, n_iterations):
 

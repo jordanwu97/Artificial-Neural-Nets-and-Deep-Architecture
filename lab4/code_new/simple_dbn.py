@@ -46,6 +46,55 @@ def saveWeights(rbm: RestrictedBoltzmannMachine, dirc, name):
     np.save(f"{dirc}/rbm.{name}.bias_v.npy", rbm.bias_v)
     np.save(f"{dirc}/rbm.{name}.bias_h.npy", rbm.bias_h)
 
+def generate(rbm0, rbm1, true_lbl):
+
+        """Generate data from labels
+
+        Args:
+          true_lbl: true labels shaped (number of samples, size of label layer)
+          name: string used for saving a video of generated visible activations
+        """
+
+        records = []
+
+        lbl = true_lbl
+        num_label = lbl.shape[1]
+        n_gibbs_gener = 200
+        
+        # [TODO TASK 4.2] fix the label in the label layer and run alternating Gibbs sampling in the top RBM. From the top RBM, drive the network \
+        # top to the bottom visible layer (replace 'vis' from random to your generated visible layer).
+
+        top = rbm1
+        hid = rbm0
+        
+        p_top_v = np.random.uniform(0,1,(lbl.shape[0], top.bias_v.shape[0]))
+        top_v = sample_binary(p_top_v)
+     
+        for it in range(n_gibbs_gener):
+            p_top_v[:,-num_label:] = lbl
+            top_v[:,-num_label:] = lbl
+     
+            p_top_h, top_h = top.get_h_given_v(p_top_v)
+            p_top_v, top_v = top.get_v_given_h(p_top_h)
+
+        v = np.zeros((28,28))
+
+        for _ in range(100):
+            top_h = sample_binary(p_top_h)
+            _, top_v = top.get_v_given_h(top_h)
+            vis, _ = hid.get_v_given_h_dir(top_v[:,:-num_label])
+            vis = np.log(vis)
+            v += vis.reshape(28,28)
+        
+            #plt.clf()
+            #plt.imshow(v)
+            #plt.show(block=False)
+            #plt.pause(0.001)
+            #plt.show()
+            # exit()
+            
+        return vis
+
 def recognize(rbm0, rbm1, input_data, true_lbl):
 
     num_labels = true_lbl.shape[1]
@@ -203,36 +252,86 @@ if __name__ == "__main__":
         rbm1.cd1(p_1_v, 10)
         saveWeights(rbm1, "simple_rbm_0", "1")
 
-    save([rbm0, rbm1], "savefiles/simpledbn_greedy.pkl")
+    #save([rbm0, rbm1], "savefiles/simpledbn_greedy.pkl")
 
-    print("recognizing...")
-    acc = []
-    for i in range(5):
-        acc.append(recognize(rbm0, rbm1, test_imgs, test_lbls))
-    print (np.mean(acc), np.std(acc))
+    #print("recognizing...")
+    #acc = []
+    #for i in range(5):
+    #    acc.append(recognize(rbm0, rbm1, test_imgs, test_lbls))
+    #print (np.mean(acc), np.std(acc))
+
+    print("generating...")
+    labels = np.zeros([1,10])
+    labels[0,0] = 1
+    vis = generate(rbm0, rbm1, labels)
+    vis = vis.reshape(28,28)
+    plt.clf()
+    plt.subplot(4,5,1)
+    plt.imshow(vis)
+    plt.show(block=False)
+    plt.pause(0.1)
+    for it in range(1,10):
+        labels[0,it] = 1
+        labels[0,it-1] = 0
+        print(labels)
+        vis = generate(rbm0, rbm1, labels)
+        vis = vis.reshape(28,28)
+        plt.subplot(4,5,it+1)
+        plt.imshow(vis)
+        plt.show(block=False)
+        plt.pause(0.1)
+    plt.savefig("pictures/4_3_generation.png")
+
+
+
+
 
     print("finetuning...")
 
-    try:
-        rbm0 = load("savefiles/simpledbn_rbm_0_finetune.pkl")
-        rbm1 = load("savefiles/simpledbn_rbm_1_finetune.pkl")
-        acc = load("savefiles/simpledbn_acc.pkl")
-    except IOError:
-        acc = train_wakesleep_finetune(rbm0, rbm1, test_imgs, test_lbls, vis_trainset=train_imgs, lbl_trainset=train_lbls, n_iterations=10, name="trainset")
-        save(rbm0, "savefiles/simpledbn_rbm_0_finetune.pkl")
-        save(rbm1, "savefiles/simpledbn_rbm_1_finetune.pkl")
-        save(acc, "savefiles/simpledbn_acc.pkl")
+    #try:
+    rbm0 = load("savefiles/simpledbn_rbm_0_finetune.pkl")
+    rbm1 = load("savefiles/simpledbn_rbm_1_finetune.pkl")
+    acc = load("savefiles/simpledbn_acc.pkl")
+    #except IOError:
+   #     acc = train_wakesleep_finetune(rbm0, rbm1, test_imgs, test_lbls, vis_trainset=train_imgs, lbl_trainset=train_lbls, n_iterations=10, name="trainset")
+    #    save(rbm0, "savefiles/simpledbn_rbm_0_finetune.pkl")
+    #    save(rbm1, "savefiles/simpledbn_rbm_1_finetune.pkl")
+    #    save(acc, "savefiles/simpledbn_acc.pkl")
 
-    plt.plot(range(len(acc)), acc)
-    plt.ylabel("Train Recognition Accuracy")
-    plt.xlabel("# Epochs Fine Tuning")
-    plt.title("Fine Tuning VS Train Recognition Accuracy")
-    plt.savefig("pictures/4_3_simple_dbn_acc.png")
+    #plt.plot(range(len(acc)), acc)
+    #plt.ylabel("Train Recognition Accuracy")
+    #plt.xlabel("# Epochs Fine Tuning")
+    #plt.title("Fine Tuning VS Train Recognition Accuracy")
+    #plt.savefig("pictures/4_3_simple_dbn_acc.png")
 
-    print("recognizing...")
-    acc = []
-    for i in range(5):
-        acc.append(recognize(rbm0, rbm1, test_imgs, test_lbls))
-    print (np.mean(acc), np.std(acc))
+    #print("recognizing...")
+    #acc = []
+    #for i in range(5):
+    #    acc.append(recognize(rbm0, rbm1, test_imgs, test_lbls))
+    #print (np.mean(acc), np.std(acc))
     # recognize(rbm0, rbm1, test_imgs, test_lbls)
+
+
+    print("generating...")
+    labels = np.zeros([1,10])
+    labels[0,0] = 1
+    vis = generate(rbm0, rbm1, labels)
+    vis = vis.reshape(28,28)
+    plt.clf()
+    plt.subplot(4,5,1)
+    plt.imshow(vis)
+    plt.show(block=False)
+    plt.pause(0.1)
+    for it in range(1,10):
+        labels[0,it] = 1
+        labels[0,it-1] = 0
+        print(labels)
+        vis = generate(rbm0, rbm1, labels)
+        vis = vis.reshape(28,28)
+        plt.subplot(4,5,it+1)
+        plt.imshow(vis)
+        plt.show(block=False)
+        plt.pause(0.1)
+    plt.savefig("pictures/4_3_fine_generation.png")
+    
 
