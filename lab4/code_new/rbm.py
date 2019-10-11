@@ -97,6 +97,8 @@ class RestrictedBoltzmannMachine:
 
         vis_trainset_shuffled = np.copy(visible_trainset)
 
+        self.recon_losses = []
+
         for it in range(0, n_iterations):
 
             # Shuffle data for better performance
@@ -125,8 +127,10 @@ class RestrictedBoltzmannMachine:
 
             reconstruct = self.get_v_given_h(self.get_h_given_v(vis_trainset_shuffled)[1])[0]
 
+            self.recon_losses.append(mean_squared_error(vis_trainset_shuffled, reconstruct))
+
             print(
-                "iteration=%7d recon_loss=%4.4f" % (it, mean_squared_error(vis_trainset_shuffled, reconstruct))
+                "iteration=%7d recon_loss=%4.4f" % (it, self.recon_losses[-1])
             )
 
             # visualize once in a while when visible layer is input images

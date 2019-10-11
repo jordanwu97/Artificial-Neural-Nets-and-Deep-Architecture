@@ -1,6 +1,7 @@
 from util import *
 from rbm import RestrictedBoltzmannMachine
 from dbn import DeepBeliefNet
+from simple_dbn import save, load
 
 if __name__ == "__main__":
 
@@ -55,8 +56,6 @@ if __name__ == "__main__":
 
     # dbn.recognize(train_imgs, train_lbls)
 
-    # dbn.recognize(test_imgs, test_lbls)
-
     #for digit in range(1,10):
     #     digit_1hot = np.zeros(shape=(1, 10))
     #     digit_1hot[0, digit] = 1
@@ -65,9 +64,35 @@ if __name__ == "__main__":
         
     """ fine-tune wake-sleep training """
 
+    dbn: DeepBeliefNet = load("savefiles/dbn_greedy.pkl")
+
+    dbn.recognize(test_imgs[:1000], test_lbls[:1000])
+
     dbn.train_wakesleep_finetune(
         vis_trainset=train_imgs, lbl_trainset=train_lbls, n_iterations=10
     )
+
+    from simple_dbn import save, load
+
+    save(dbn, "savefiles/originaldbn_finetuned")
+
+    dbn.recognize(test_imgs[:1000], test_lbls[:1000])
+
+    # acc = np.load("trained_dbn/accuracy_reco_finetune_normal_dbn.npy")
+
+    # plt.plot(range(len(acc)), acc)
+    # plt.xlabel("Fine Tuning Epochs")
+    # plt.ylabel("Train Set Accuracy")
+    # plt.title("Fine Tuning vs Accuracy")
+    # plt.savefig("pictures/4_3_fine_tune_acc.png")
+
+    for name, im, lb in [("train", train_imgs, train_lbls), ("test", test_imgs, test_lbls)]:
+        acc = []
+        for trials in range(10):
+            acc.append(dbn.recognize(train_imgs, train_lbls))
+            # print (name, acc[-1])
+
+        print (f"{name} & {np.mean(acc):.5f} & {np.std(acc):.5f}")
 
     # dbn.recognize(train_imgs, train_lbls)
 
