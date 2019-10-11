@@ -107,7 +107,7 @@ class DeepBeliefNet:
 
         return accuracy
 
-    def generate(self, true_lbl, name):
+    def generate(self, true_lbl):
 
         """Generate data from labels
 
@@ -119,13 +119,8 @@ class DeepBeliefNet:
         n_sample = true_lbl.shape[0]
 
         records = []
-        fig, ax = plt.subplots(1, 1, figsize=(3, 3))
-        plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
-        ax.set_xticks([])
-        ax.set_yticks([])
 
         lbl = true_lbl
-
         num_label = lbl.shape[1]
         
         # [TODO TASK 4.2] fix the label in the label layer and run alternating Gibbs sampling in the top RBM. From the top RBM, drive the network \
@@ -135,31 +130,15 @@ class DeepBeliefNet:
         pen = self.rbm_stack["hid--pen"]
         hid = self.rbm_stack["vis--hid"]
         
-        p_top_v = np.random.normal(0, 0.01, (lbl.shape[0],top.bias_v.shape[0]))
-
-        top_v = np.copy([-1*top.bias_v])
-        top_v = sample_binary(top_v)
+        p_top_v = np.random.uniform(0,1,(lbl.shape[0],top.bias_v.shape[0]))
+        top_v = sample_binary(p_top_v)
 
         for it in range(self.n_gibbs_gener):
             p_top_v[:,-num_label:] = lbl
             top_v[:,-num_label:] = lbl
 
-            p_top_h, top_h = top.get_h_given_v(top_v)
-            p_top_v, top_v = top.get_v_given_h(top_h)
-            
-        
-            # if it < 10 or it > 990:
-            #     if type(last) != int:
-            #         print (it, )
-                # if it == 991:
-                #     print ("991")
-                # plt.clf()
-                # plt.imshow(np.log(p_top_v[:,:-num_label]).reshape(10,50))
-                # # plt.imshow(np.log(p_top_h).reshape(50,40))
-                # plt.show(block=False)
-                # plt.pause(0.01)
-
-        # s = 100
+            p_top_h, top_h = top.get_h_given_v(p_top_v)
+            p_top_v, top_v = top.get_v_given_h(p_top_h)
 
         v = np.zeros((28,28))
 
@@ -180,23 +159,6 @@ class DeepBeliefNet:
             #plt.show()
             # exit()
             
-        #     records.append(
-        #         [
-        #             ax.imshow(
-        #                 vis.reshape(self.image_size),
-        #                 cmap="bwr",
-        #                 vmin=0,
-        #                 vmax=1,
-        #                 animated=True,
-        #                 interpolation=None,
-        #             )
-        #         ]
-        #     )
-
-        # anim = stitch_video(fig, records).save(
-        #     "%s.generate%d.mp4" % (name, np.argmax(true_lbl))
-        # )
-
         return
 
     def train_greedylayerwise(self, vis_trainset, lbl_trainset, n_iterations):

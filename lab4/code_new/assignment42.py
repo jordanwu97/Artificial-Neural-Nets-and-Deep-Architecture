@@ -36,18 +36,18 @@ if __name__ == "__main__":
 
         pickle.dump(dbn, open("savefiles/dbn_greedy.pkl", "wb"))
 
-    dbn.recognize(train_imgs[:100], train_lbls[:100])    
+    #dbn.recognize(train_imgs[:100], train_lbls[:100])
 
-    for name, rbm in dbn.rbm_stack.items():
-        plt.plot(range(len(rbm.recon_losses)), rbm.recon_losses, label=f"{name}")
-        plt.annotate(f"{rbm.recon_losses[-1]:.5f}", (len(rbm.recon_losses) - 1,rbm.recon_losses[-1]))
+    #for name, rbm in dbn.rbm_stack.items():
+    #    plt.plot(range(len(rbm.recon_losses)), rbm.recon_losses, label=f"{name}")
+    #    plt.annotate(f"{rbm.recon_losses[-1]:.5f}", (len(rbm.recon_losses) - 1,rbm.recon_losses[-1]))
 
-    plt.xlim(-0.5, len(rbm.recon_losses) + 0.5)
-    plt.title("Layers Recon Loss")
-    plt.ylabel("Reconstruction Loss")
-    plt.xlabel("# Epochs")
-    plt.legend()
-    plt.savefig("pictures/4_2_recon_losses.png")
+    #plt.xlim(-0.5, len(rbm.recon_losses) + 0.5)
+    #plt.title("Layers Recon Loss")
+    #plt.ylabel("Reconstruction Loss")
+    #plt.xlabel("# Epochs")
+    #plt.legend()
+    #plt.savefig("pictures/4_2_recon_losses.png")
 
     # for name, im, lb in [("train", train_imgs, train_lbls), ("test", test_imgs, test_lbls)]:
     #     acc = []
@@ -58,3 +58,9 @@ if __name__ == "__main__":
     #     print (f"{name} & {np.mean(acc):.5f} & {np.std(acc):.5f}")
 
     ### DO IMAGE GEN HERE!
+
+    dbn.generate(train_lbls)
+
+
+
+
