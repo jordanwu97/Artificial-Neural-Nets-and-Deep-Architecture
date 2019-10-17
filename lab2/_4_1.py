@@ -14,13 +14,9 @@ def loadAnimalData():
 
 class SOM:
 
-    def __init__(self, num_nodes):
+    def __init__(self, num_nodes, get_neighbors_func):
         self.num_nodes = num_nodes
-
-    def getNeighborArgs(self, center, nb_size, maxsize):
-        low = max(center - nb_size,0)
-        high = min(center + nb_size, maxsize-1)
-        return np.arange(low, high+1)
+        self.get_neighbors = get_neighbors_func
 
     def train(self, dataMatrix: np.ndarray, n_epochs=20, eta=0.2):
         
@@ -36,7 +32,7 @@ class SOM:
                 p = p.reshape(1,-1)
 
                 center_arg, _ = pairwise_distances_argmin_min(p, nodes)
-                nbs_args = self.getNeighborArgs(center_arg, nb_size, len(nodes))
+                nbs_args = self.get_neighbors(center_arg, nb_size)
 
                 nodes[nbs_args] += eta * (p - nodes[nbs_args])
 
@@ -52,6 +48,14 @@ if __name__ == "__main__":
     
     names, attr, datapoints = loadAnimalData()
 
-    som = SOM(100)
+    num_nodes = 100
+
+    def get_neighbors_linear(center, nb_size):
+        low = max(center - nb_size,0)
+        high = min(center + nb_size, num_nodes-1)
+        return np.arange(low, high+1)
+
+    som = SOM(num_nodes, get_neighbors_linear)
+
     som.train(datapoints)
     som.showMap(datapoints, names)
