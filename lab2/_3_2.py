@@ -30,6 +30,8 @@ def findBestParams(
 
     for run in range(num_runs):
 
+        print ("run", run)
+
         y, y_val = getNoisy(np.array([y, y_val])) if apply_noise else (y, y_val)
 
         for i, hidden_num in enumerate(hidden_range):
@@ -99,7 +101,7 @@ if __name__ == "__main__":
     # plt.savefig("pictures/3_2_parameter_map_batch_square.png", bbox_inches='tight')
     # plt.clf()
 
-    # dat = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_delta_batch")
+    dat = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_delta_batch")
     # plt.savefig("pictures/3_2_parameter_map_delta_sin.png", bbox_inches="tight")
     # plt.clf()
     # dat = findBestParams(X, Y_SQUARE, X_VAL, Y_SQUARE_VAL, "train_delta_batch")
