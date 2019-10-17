@@ -14,9 +14,10 @@ def loadAnimalData():
 
 class SOM:
 
-    def __init__(self, num_nodes, get_neighbors_func):
+    def __init__(self, num_nodes, get_neighbors_func, neighbor_size_func):
         self.num_nodes = num_nodes
         self.get_neighbors = get_neighbors_func
+        self.neighbor_size = neighbor_size_func
 
     def train(self, dataMatrix: np.ndarray, n_epochs=20, eta=0.2):
         
@@ -26,7 +27,7 @@ class SOM:
 
         for ep in range(1,n_epochs+1):
             
-            nb_size = (n_epochs - ep) + 5
+            nb_size = self.neighbor_size(ep)
 
             for p in dataMatrix:
                 p = p.reshape(1,-1)
@@ -40,9 +41,12 @@ class SOM:
 
     def showMap(self, dataMatrix, labels):
 
-        label_arg = [ (label, pairwise_distances_argmin_min(p.reshape(1,-1), self.nodes)[0][0]) for label, p in zip(labels, dataMatrix) ]
-        label_arg = sorted(label_arg, key=lambda x:x[1])
-        print (label_arg)
+        best_nodes = [ pairwise_distances_argmin_min(p.reshape(1,-1), self.nodes)[0][0] for p in dataMatrix ]
+        
+        sorted_args = np.argsort(best_nodes)
+
+        return labels[sorted_args]
+        
 
 if __name__ == "__main__":
     
@@ -55,7 +59,7 @@ if __name__ == "__main__":
         high = min(center + nb_size, num_nodes-1)
         return np.arange(low, high+1)
 
-    som = SOM(num_nodes, get_neighbors_linear)
+    som = SOM(num_nodes, get_neighbors_linear, lambda ep: (20 - ep) + 5)
 
     som.train(datapoints)
-    som.showMap(datapoints, names)
+    print (som.showMap(datapoints, names))
