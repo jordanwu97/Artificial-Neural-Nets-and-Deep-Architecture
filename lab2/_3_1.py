@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.metrics.pairwise import rbf_kernel
 
-sign = np.vectorize(lambda x: np.where(x >= 0, 1, -1))
+sign = lambda x: np.where(x >= 0, 1, -1)
 
 X = np.arange(0, 2 * np.pi, 0.1)
 Y_SIN = np.sin(2 * X)
@@ -23,10 +24,13 @@ class RBF_NET:
         self.activation = activation
 
     def phi(self, X):
-        X_ = repeat2D(X, len(self.rbfs_mean))
-        mean_ = repeat2D(self.rbfs_mean, len(X_)).T
+        # X_ = repeat2D(X, len(self.rbfs_mean))
+        # mean_ = repeat2D(self.rbfs_mean, len(X_)).T
 
-        phi = np.exp(-1 * ((X_ - mean_) ** 2) / (2 * self.rbfs_variance ** 2))
+        X = X if len(X.shape) == 2 else X.reshape(-1,1)
+        Y = self.rbfs_mean if len(self.rbfs_mean.shape) == 2 else self.rbfs_mean.reshape(-1,1)
+
+        phi = rbf_kernel(X, Y, gamma=1/(2 * self.rbfs_variance ** 2))
 
         return phi
 
