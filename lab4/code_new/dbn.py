@@ -145,17 +145,14 @@ class DeepBeliefNet:
             _, top_v = top.get_v_given_h(top_h)
             _, pen_v = pen.get_v_given_h_dir(top_v[:,:-num_label])
             vis, _ = hid.get_v_given_h_dir(pen_v)
-            #vis = np.log(vis)
             v += vis.reshape(28,28)
         
-            #plt.clf()
-            #plt.imshow(v)
-            #plt.show(block=False)
-            #plt.pause(0.001)
-            #plt.show()
-            # exit()
+        # plt.clf()
+        # plt.imshow(v)
+        # plt.show(block=False)
+        # plt.pause(0.01)
             
-        return vis
+        return v
 
     def train_greedylayerwise(self, vis_trainset, lbl_trainset, n_iterations):
 
