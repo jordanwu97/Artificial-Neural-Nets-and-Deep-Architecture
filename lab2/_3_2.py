@@ -17,7 +17,7 @@ def findBestParams(
     training_method,
     apply_noise=True,
     randomize_rbfs=False,
-    max_epochs=100,
+    max_epochs=1000,
     hidden_range=np.arange(2, 41),
     var_range=np.round(np.arange(0.2, 1.2, 0.2), 2),
     eta=0.01,
@@ -30,7 +30,7 @@ def findBestParams(
 
     for run in range(num_runs):
 
-        print ("run", run)
+        # print ("run", run)
 
         y, y_val = getNoisy(np.array([y, y_val])) if apply_noise else (y, y_val)
 
@@ -108,17 +108,17 @@ if __name__ == "__main__":
     # plt.savefig("pictures/3_2_parameter_map_batch_square.png", bbox_inches='tight')
     # plt.clf()
 
-    dat = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_delta_batch")
-    plt.savefig("pictures/3_2_parameter_map_delta_sin.png", bbox_inches="tight")
-    plt.clf()
-    dat = findBestParams(X, Y_SQUARE, X_VAL, Y_SQUARE_VAL, "train_delta_batch")
-    plt.savefig("pictures/3_2_parameter_map_delta_square.png", bbox_inches="tight")
-    plt.clf()
+    # dat = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_delta_batch")
+    # plt.savefig("pictures/3_2_parameter_map_delta_sin.png", bbox_inches="tight")
+    # plt.clf()
+    # dat = findBestParams(X, Y_SQUARE, X_VAL, Y_SQUARE_VAL, "train_delta_batch")
+    # plt.savefig("pictures/3_2_parameter_map_delta_square.png", bbox_inches="tight")
+    # plt.clf()
 
-    exit()
+    # exit()
 
 
-    # 3.2.2 Use best params to find rate of convergence
+    # # 3.2.2 Use best params to find rate of convergence
     # etas = [0.001,0.005,0.01,0.05,0.1,0.5,1]
     # errors = []
     # epss = []
@@ -128,41 +128,52 @@ if __name__ == "__main__":
     #     errors.append(error)
     #     epss.append(eps)
 
-    # # plt.clf()
+    # plt.clf()
     # plt.plot(etas, epss)
     # plt.plot(etas, epss, "ro")
     # plt.xscale("log")
-    # plt.ylabel("Epochs (Max=100)")
+    # plt.ylabel("Epochs (Max=1000)")
     # plt.xlabel("Eta")
     # for et, ep, err in zip(etas, epss, errors):
     #     plt.annotate(f'{np.round(err,2)}', xy=(et,ep))
     # plt.title("Eta vs Epochs (Annotated with Validation Error)")
     # plt.savefig("pictures/3_2_eta_v_ep.png", bbox_inches="tight")
 
-    # 3.2.4 Random positioning of rbf nodes
+    # exit()
+
+
+    # # 3.2.4 Random positioning of rbf nodes
     # dat = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_batch", randomize_rbfs=True)
     # plt.savefig("pictures/3_2_parameter_map_batch_sin_random.png", bbox_inches='tight')
     # plt.clf()
     # dat = findBestParams(X, Y_SIN, X_VAL, Y_SQUARE_VAL, "train_batch", randomize_rbfs=True)
     # plt.savefig("pictures/3_2_parameter_map_batch_square_random.png", bbox_inches='tight')
 
+    # exit()
+
     # 3.2.5 Test Against Clean Data
-    # error,_,_,_ = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_batch", apply_noise=False, hidden_range=[9], var_range=[.4])
-    # print (" & ".join(["sin","batch","9",".4", str(error), "\\\\"]))
-    # error,_,_,_ = findBestParams(X, Y_SIN, X_VAL, Y_SQUARE_VAL, "train_batch", apply_noise=False, hidden_range=[25], var_range=[.4])
-    # print (" & ".join(["square","batch","25",".4", str(error), "\\\\"]))
-    # error,_,_,_ = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_delta_batch", apply_noise=False, hidden_range=[12], var_range=[.2])
-    # print (" & ".join(["sin","delta","12",".2", str(error), "\\\\"]))
-    # error,_,_,_ = findBestParams(X, Y_SIN, X_VAL, Y_SQUARE_VAL, "train_delta_batch", apply_noise=False, hidden_range=[15], var_range=[.2])
-    # print (" & ".join(["square","delta","15",".2", str(error), "\\\\"]))
+    # h, v = 7, .4
+    # error,_,_,_ = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_batch", apply_noise=False, hidden_range=[h], var_range=[v])
+    # print (" & ".join(["sin","batch",f"{h}",f"{v}", f"{error:.6f}", "\\\\"]))
+    # h, v = 13, .4
+    # error,_,_,_ = findBestParams(X, Y_SQUARE, X_VAL, Y_SQUARE_VAL, "train_batch", apply_noise=False, hidden_range=[h], var_range=[v])
+    # print (" & ".join(["square","batch",f"{h}",f"{v}", f"{error:.6f}", "\\\\"]))
+    # h, v = 12, .2
+    # error,_,_,_ = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_delta_batch", apply_noise=False, hidden_range=[h], var_range=[v])
+    # print (" & ".join(["sin","delta",f"{h}",f"{v}", f"{error:.6f}", "\\\\"]))
+    # h, v = 5, .6
+    # error,_,_,_ = findBestParams(X, Y_SQUARE, X_VAL, Y_SQUARE_VAL, "train_delta_batch", apply_noise=False, hidden_range=[h], var_range=[v])
+    # print (" & ".join(["square","delta",f"{h}",f"{v}", f"{error:.6f}", "\\\\"]))
+
+    # exit()
 
     # 3.2.6 VS MLP
     from sklearn.neural_network import MLPRegressor
     from sklearn.metrics import mean_squared_error
 
     for name, y, y_val, rbfs_units, rbfs_var in [
-        ("sin", Y_SIN, Y_SIN_VAL, 9, 0.4),
-        ("square", Y_SQUARE, Y_SQUARE_VAL, 25, 0.4),
+        ("sin", Y_SIN, Y_SIN_VAL, 7, 0.4),
+        ("square", Y_SQUARE, Y_SQUARE_VAL, 13, 0.4),
     ]:
 
         y, y_val = getNoisy(np.array([y, y_val]))
@@ -184,7 +195,7 @@ if __name__ == "__main__":
         n.fit(X.reshape(-1, 1), y)
         pred = n.predict(X_VAL.reshape(-1, 1))
         mse = mean_squared_error(y_val, pred)
-        plt.plot(X_VAL, pred, label=f"MLP (10 Hidden) ({name}) mse={mse}")
+        plt.plot(X_VAL, pred, label=f"MLP (10 Hidden) ({name}) mse={mse:.6f}")
 
         # RBF
         n = RBF_NET(np.arange(0, 2 * np.pi, 2 * np.pi / rbfs_units), rbfs_var)
@@ -194,9 +205,9 @@ if __name__ == "__main__":
         plt.plot(
             X_VAL,
             pred,
-            label=f"RBF (units={rbfs_units},var={rbfs_var}) ({name}) mse={mse}",
+            label=f"RBF (units={rbfs_units},var={rbfs_var}) ({name}) mse={mse:.6f}",
         )
 
     plt.title("Regressor Performance\n")
     plt.legend()
-    plt.show()
+    plt.savefig("pictures/rbf_vs_mlp.png", bbox_inches='tight')

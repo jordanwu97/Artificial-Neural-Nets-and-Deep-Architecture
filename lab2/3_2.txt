@@ -4,7 +4,12 @@ Effects of positioning the rbfs none
 
 Best Model for noisy on clean data
 
-sin & batch & 9 & .4 & 0.06256356884993401 & \\
-square & batch & 25 & .4 & 14.368710529022556 & \\
-sin & delta & 12 & .2 & 0.8645373054209177 & \\
-square & delta & 15 & .2 & 14.303308061204092 & \\
+
+
+sin & batch & 7 & 0.4 & 0.108579 & \\
+
+square & batch & 13 & 0.4 & 0.190366 & \\
+
+sin & delta & 12 & 0.2 & 0.090481 & \\
+
+square & delta & 5 & 0.6 & 0.372743 & \\

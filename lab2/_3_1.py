@@ -13,8 +13,6 @@ X_VAL = np.arange(0.05, 2 * np.pi, 0.1)[:,np.newaxis]
 Y_SIN_VAL = np.sin(2 * X_VAL)
 Y_SQUARE_VAL = sign(np.sin(2 * X_VAL))
 
-print (Y_SIN.shape)
-
 
 def repeat2D(A, rep):
     return np.repeat(A, rep).reshape(len(A), rep)
