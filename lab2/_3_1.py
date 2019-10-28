@@ -5,13 +5,15 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 sign = lambda x: np.where(x >= 0, 1, -1)
 
-X = np.arange(0, 2 * np.pi, 0.1)
+X = np.arange(0, 2 * np.pi, 0.1)[:,np.newaxis]
 Y_SIN = np.sin(2 * X)
 Y_SQUARE = sign(np.sin(2 * X))
 
-X_VAL = np.arange(0.05, 2 * np.pi, 0.1)
+X_VAL = np.arange(0.05, 2 * np.pi, 0.1)[:,np.newaxis]
 Y_SIN_VAL = np.sin(2 * X_VAL)
 Y_SQUARE_VAL = sign(np.sin(2 * X_VAL))
+
+print (Y_SIN.shape)
 
 
 def repeat2D(A, rep):
@@ -20,14 +22,11 @@ def repeat2D(A, rep):
 
 class RBF_NET:
     def __init__(self, rbfs_mean, rbfs_variance, activation=lambda x: x):
-        self.rbfs_mean = rbfs_mean
+        self.rbfs_mean = rbfs_mean if rbfs_mean.ndim > 1 else rbfs_mean[:, np.newaxis]
         self.rbfs_variance = rbfs_variance
         self.activation = activation
 
     def phi(self, X):
-        # X_ = repeat2D(X, len(self.rbfs_mean))
-        # mean_ = repeat2D(self.rbfs_mean, len(X_)).T
-
         X = X if len(X.shape) == 2 else X.reshape(-1,1)
         Y = self.rbfs_mean if len(self.rbfs_mean.shape) == 2 else self.rbfs_mean.reshape(-1,1)
 
@@ -45,33 +44,35 @@ class RBF_NET:
         callback() if callback else None
         return 1
 
-    def train_delta_single(self, X_scalar, Y_scalar, eta=1):
-        phi_ = self.phi(X_scalar)
-        pred = self.activation(phi_ @ self.W)
-        e = (Y_scalar - pred)[0]
-        delW = (eta * e * phi_).flatten()
+    def train_delta_single(self, phi_X, Y_example, eta):
+        pred = self.activation(phi_X @ self.W)
+        e = (Y_example - pred)
+        delW = (eta * e @ phi_X).T
         self.W += delW
         return np.max(np.abs(delW))
 
-    def train_delta_batch(self, X, Y, max_epochs=100, eta=1, callback=None):
+    def train_delta_batch(self, X, Y, max_epochs=1000, eta=0.01, callback=None):
         """
         Return # epochs to convergence (when error < 0.01)
         """
         self.W = np.random.randn(*self.rbfs_mean.shape)
         
         old_e = 0
+
+        phi_X = self.phi(X)
         
-        for _ in range(1, max_epochs):
-            # print (_)
+        for epoch in range(1, max_epochs):
             maxDelW = 0
             for i in range(len(X)):
-                maxDelW = max(self.train_delta_single(X[i : i + 1], Y[i : i + 1], eta=eta), maxDelW)
+                Y_example = Y[i : i + 1]
+                phi_X_example = phi_X[i : i + 1]
+                maxDelW = max(self.train_delta_single(phi_X_example, Y_example, eta), maxDelW)
             new_e = self.mse(X,Y)
             if abs(old_e - new_e) < 10**-5:
                 break
             old_e = new_e
-
-        return _
+        
+        return epoch
 
     def predict(self, X):
         return self.activation(self.phi(X) @ self.W)
@@ -108,8 +109,35 @@ if __name__ == "__main__":
             print(max(thresholds), "&", e, "&", hidden_num, "\\\\")
             thresholds.remove(max(thresholds))
 
+        plt.plot(X, n.predict(X))
+        plt.show(block=False)
+        plt.title(hidden_num)
+        plt.pause(.1)
+        plt.clf()
+
+
     thresholds = set([0.1, 0.01, 0.001])
     print("Square")
+    print("Threshold & Error Achieved & Hidden \\\\")
+    for hidden_num in range(1, 40):
+        rbfs_mean = np.arange(0, 2 * np.pi, 2 * np.pi / hidden_num)
+        rbfs_variance = 0.3
+        n = RBF_NET(rbfs_mean, rbfs_variance)
+        n.train_batch(X, Y_SQUARE)
+        e = n.mae(X_VAL, Y_SQUARE_VAL)
+        if len(thresholds) and e < max(thresholds):
+            print(max(thresholds), "&", e, "&", hidden_num, "\\\\")
+            thresholds.remove(max(thresholds))
+    
+        plt.plot(X, n.predict(X))
+        plt.show(block=False)
+        plt.title(hidden_num)
+        plt.pause(.1)
+        plt.clf()
+
+
+    thresholds = set([0.1, 0.01, 0.001])
+    print("Square (With Sign Activation)")
     print("Threshold & Error Achieved & Hidden \\\\")
     for hidden_num in range(1, 40):
         rbfs_mean = np.arange(0, 2 * np.pi, 2 * np.pi / hidden_num)
@@ -121,9 +149,3 @@ if __name__ == "__main__":
             print(max(thresholds), "&", e, "&", hidden_num, "\\\\")
             thresholds.remove(max(thresholds))
             # break
-
-        # plt.plot(X, n.predict(X))
-        # plt.show(block=False)
-        # plt.title(hidden_num)
-        # plt.pause(.1)
-        # plt.clf()

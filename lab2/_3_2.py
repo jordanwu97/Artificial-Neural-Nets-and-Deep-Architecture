@@ -18,9 +18,9 @@ def findBestParams(
     apply_noise=True,
     randomize_rbfs=False,
     max_epochs=100,
-    hidden_range=np.arange(1, 41),
+    hidden_range=np.arange(2, 41),
     var_range=np.round(np.arange(0.2, 1.2, 0.2), 2),
-    eta=1,
+    eta=0.01,
 ):
 
     num_runs = 10
@@ -53,12 +53,19 @@ def findBestParams(
                             x, y, callback=None, max_epochs=max_epochs, eta=eta
                         )
                         cont = True
+
+                        # plt.plot(X, n.predict(X))
+                        # plt.show(block=False)
+                        # plt.title(hidden_num)
+                        # plt.pause(.1)
+                        # plt.clf()
+
                     except KeyboardInterrupt:
                         exit()
                     except np.linalg.LinAlgError:
                         pass
 
-                e = n.error(x_val, y_val)
+                e = n.mae(x_val, y_val)
 
                 errors[run][i][j] = np.inf if np.isnan(e) else e
                 num_epochs[run][i][j] = eps
@@ -100,7 +107,6 @@ if __name__ == "__main__":
     # dat = findBestParams(X, Y_SQUARE, X_VAL, Y_SQUARE_VAL, "train_batch")
     # plt.savefig("pictures/3_2_parameter_map_batch_square.png", bbox_inches='tight')
     # plt.clf()
-
 
     dat = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_delta_batch")
     plt.savefig("pictures/3_2_parameter_map_delta_sin.png", bbox_inches="tight")
