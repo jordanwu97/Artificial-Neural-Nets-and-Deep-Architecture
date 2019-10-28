@@ -41,19 +41,21 @@ if __name__ == "__main__":
 
     def neighbor_size(ep):
         if ep < (num_epochs * 1/3):
-            return 3
+            return 4
         if ep < (num_epochs * 2/3):
-            return 1
-        return 0
+            return 2
+        return 1
 
-    neighborhoodmap = np.array([[[a,b] for b in range(10)] for a in range(10) ])
+    neighborhoodmap = np.array([[[a,b] for b in range(10)] for a in range(10) ]).reshape(100,2)
 
     def neigh_func(center, neighborhood):
-        center_v = neighborhoodmap.reshape(100,2)[center]
-        dist_mat = np.linalg.norm(neighborhoodmap - center_v, axis=2)
-        args = np.where(dist_mat <= neighborhood)
+        center_v = neighborhoodmap[center]
+        # dist_mat = np.linalg.norm(neighborhoodmap - center_v, axis=2)
+        # args = np.where(dist_mat <= neighborhood)
+        # print (center)
+        out = rbf_kernel(neighborhoodmap, center_v, gamma=1/((neighborhood)**2))
 
-        return args[0] * 10 + args[1]
+        return out
 
     som = SOM(nodes_shape[0] * nodes_shape[1], neigh_func, neighbor_size)
     som.train(votes, num_epochs)
