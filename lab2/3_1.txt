@@ -1,5 +1,5 @@
 Sin
-Threshold & Error Achieved & Hidden \\
+Threshold & Error Achieved (Mean Absolute) & Hidden \\
 0.1 & 0.08018244637400784 & 9 \\
 0.01 & 0.00949715860291465 & 13 \\
 0.001 & 0.0008447670321662893 & 33 \\

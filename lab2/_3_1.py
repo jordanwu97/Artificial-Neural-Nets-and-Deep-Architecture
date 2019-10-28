@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics.pairwise import rbf_kernel
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 sign = lambda x: np.where(x >= 0, 1, -1)
 
@@ -65,7 +66,7 @@ class RBF_NET:
             maxDelW = 0
             for i in range(len(X)):
                 maxDelW = max(self.train_delta_single(X[i : i + 1], Y[i : i + 1], eta=eta), maxDelW)
-            new_e = self.error(X,Y)
+            new_e = self.mse(X,Y)
             if abs(old_e - new_e) < 10**-5:
                 break
             old_e = new_e
@@ -75,8 +76,11 @@ class RBF_NET:
     def predict(self, X):
         return self.activation(self.phi(X) @ self.W)
 
-    def error(self, X, Y):
-        return np.mean(np.abs((self.predict(X) - Y)))
+    def mse(self, X, Y):
+        return mean_squared_error(self.predict(X), Y)
+
+    def mae(self, X, Y):
+        return mean_absolute_error(self.predict(X), Y)
 
 
 def runWithParams(x, y, x_val, y_val, means, variance, training_method):
@@ -85,7 +89,7 @@ def runWithParams(x, y, x_val, y_val, means, variance, training_method):
     """
     n = RBF_NET(means, variance)
     n.__getattribute__(training_method)(x, y, callback=None)
-    return n.error(x_val, y_val)
+    return n.mae(x_val, y_val)
 
 
 if __name__ == "__main__":
@@ -99,7 +103,7 @@ if __name__ == "__main__":
         rbfs_variance = 0.3
         n = RBF_NET(rbfs_mean, rbfs_variance)
         n.train_batch(X, Y_SIN)
-        e = n.error(X_VAL, Y_SIN_VAL)
+        e = n.mae(X_VAL, Y_SIN_VAL)
         if len(thresholds) and e < max(thresholds):
             print(max(thresholds), "&", e, "&", hidden_num, "\\\\")
             thresholds.remove(max(thresholds))
@@ -112,7 +116,7 @@ if __name__ == "__main__":
         rbfs_variance = 0.3
         n = RBF_NET(rbfs_mean, rbfs_variance, activation=sign)
         n.train_batch(X, Y_SQUARE)
-        e = n.error(X_VAL, Y_SQUARE_VAL)
+        e = n.mae(X_VAL, Y_SQUARE_VAL)
         if len(thresholds) and e < max(thresholds):
             print(max(thresholds), "&", e, "&", hidden_num, "\\\\")
             thresholds.remove(max(thresholds))

@@ -94,21 +94,23 @@ def findBestParams(
 if __name__ == "__main__":
 
     # 3.2.1 3.2.3
-    dat = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_batch")
-    plt.savefig("pictures/3_2_parameter_map_batch_sin.png", bbox_inches='tight')
+    # dat = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_batch")
+    # plt.savefig("pictures/3_2_parameter_map_batch_sin.png", bbox_inches='tight')
+    # plt.clf()
+    # dat = findBestParams(X, Y_SQUARE, X_VAL, Y_SQUARE_VAL, "train_batch")
+    # plt.savefig("pictures/3_2_parameter_map_batch_square.png", bbox_inches='tight')
+    # plt.clf()
+
+
+    dat = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_delta_batch")
+    plt.savefig("pictures/3_2_parameter_map_delta_sin.png", bbox_inches="tight")
     plt.clf()
-    dat = findBestParams(X, Y_SQUARE, X_VAL, Y_SQUARE_VAL, "train_batch")
-    plt.savefig("pictures/3_2_parameter_map_batch_square.png", bbox_inches='tight')
+    dat = findBestParams(X, Y_SQUARE, X_VAL, Y_SQUARE_VAL, "train_delta_batch")
+    plt.savefig("pictures/3_2_parameter_map_delta_square.png", bbox_inches="tight")
     plt.clf()
 
     exit()
 
-    # dat = findBestParams(X, Y_SIN, X_VAL, Y_SIN_VAL, "train_delta_batch")
-    # plt.savefig("pictures/3_2_parameter_map_delta_sin.png", bbox_inches="tight")
-    # plt.clf()
-    # dat = findBestParams(X, Y_SQUARE, X_VAL, Y_SQUARE_VAL, "train_delta_batch")
-    # plt.savefig("pictures/3_2_parameter_map_delta_square.png", bbox_inches="tight")
-    # plt.clf()
 
     # 3.2.2 Use best params to find rate of convergence
     # etas = [0.001,0.005,0.01,0.05,0.1,0.5,1]
