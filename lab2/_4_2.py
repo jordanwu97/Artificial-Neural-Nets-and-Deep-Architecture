@@ -38,14 +38,16 @@ if __name__ == "__main__":
         return np.mod(np.arange(low, high+1), num_nodes)
 
     som = SOM(num_nodes, circular_neighbor, neighbor_size)
-    som.train(datapoints, num_epochs)
-    order = som.showMap(datapoints, labels)
 
-    print (getFinalLen(datapoints[order]))
+    for _ in range(10):
+        som.train(datapoints, num_epochs)
+        order = som.showMap(datapoints, labels)
 
-    plt.plot(datapoints.T[0], datapoints.T[1], "ro")
-    plt.plot(datapoints[order].T[0], datapoints[order].T[1], "--")
-    for i, point in enumerate(datapoints[order]):
-        plt.annotate(i, point)
-    plt.show()
+        plt.plot(datapoints.T[0], datapoints.T[1], "ro")
+        plt.plot(datapoints[order].T[0], datapoints[order].T[1], "--")
+        for i, point in enumerate(datapoints[order]):
+            plt.annotate(i, point)
+        plt.show()
+
+        print (getFinalLen(datapoints[order]))
     

@@ -1,6 +1,6 @@
 import numpy as np
 import re
-from sklearn.metrics import pairwise_distances_argmin_min, pairwise_distances
+from sklearn.metrics import pairwise_distances_argmin, pairwise_distances
 
 def loadAnimalData():
     with open("data/animalnames.txt") as f:
@@ -32,7 +32,7 @@ class SOM:
             for p in dataMatrix:
                 p = p.reshape(1,-1)
 
-                center_arg, _ = pairwise_distances_argmin_min(p, nodes)
+                center_arg = pairwise_distances_argmin(p, nodes)
                 nbs_args = self.get_neighbors(center_arg, nb_size)
 
                 nodes[nbs_args] += eta * (p - nodes[nbs_args])
@@ -41,8 +41,10 @@ class SOM:
 
     def showMap(self, dataMatrix, labels):
 
-        best_nodes = [ pairwise_distances_argmin_min(p.reshape(1,-1), self.nodes)[0][0] for p in dataMatrix ]
-        
+        best_nodes = pairwise_distances_argmin(dataMatrix, self.nodes)
+
+        self.map = best_nodes
+
         sorted_args = np.argsort(best_nodes)
 
         return labels[sorted_args]
@@ -62,4 +64,5 @@ if __name__ == "__main__":
     som = SOM(num_nodes, get_neighbors_linear, lambda ep: (20 - ep) + 5)
 
     som.train(datapoints)
+    
     print (som.showMap(datapoints, names))

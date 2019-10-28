@@ -76,7 +76,7 @@ class RBF_NET:
         return self.activation(self.phi(X) @ self.W)
 
     def error(self, X, Y):
-        return np.sum((self.predict(X) - Y) ** 2)
+        return np.mean(np.abs((self.predict(X) - Y)))
 
 
 def runWithParams(x, y, x_val, y_val, means, variance, training_method):
@@ -116,7 +116,7 @@ if __name__ == "__main__":
         if len(thresholds) and e < max(thresholds):
             print(max(thresholds), "&", e, "&", hidden_num, "\\\\")
             thresholds.remove(max(thresholds))
-            break
+            # break
 
         # plt.plot(X, n.predict(X))
         # plt.show(block=False)

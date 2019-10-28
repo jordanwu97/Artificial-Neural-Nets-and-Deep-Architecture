@@ -1,12 +1,13 @@
-Sine
+Sin
 Threshold & Error Achieved & Hidden \\
-0.1 & 0.041158266342128776 & 11 \\
-0.01 & 0.008754253046562264 & 23 \\
-0.001 & 0.0007309453839854643 & 31 \\
-
+0.1 & 0.08018244637400784 & 9 \\
+0.01 & 0.00949715860291465 & 13 \\
+0.001 & 0.0008447670321662893 & 33 \\
 Square
 Threshold & Error Achieved & Hidden \\
-0.1 & 0 & 13 \\
+0.1 & 0.06349206349206349 & 6 \\
+0.01 & 0.0 & 13 \\
+0.001 & 0.0 & 17 \\
 
 Square wave needed to have sign applied to the output to achieve 0 error. 
 We used 13 units to get the validation error to 0. This transform can be useful in classification applications.
