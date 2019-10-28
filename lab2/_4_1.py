@@ -1,6 +1,7 @@
 import numpy as np
 import re
 from sklearn.metrics import pairwise_distances_argmin, pairwise_distances
+from sklearn.metrics.pairwise import rbf_kernel
 
 def loadAnimalData():
     with open("data/animalnames.txt") as f:
@@ -33,9 +34,8 @@ class SOM:
                 p = p.reshape(1,-1)
 
                 center_arg = pairwise_distances_argmin(p, nodes)
-                nbs_args = self.get_neighbors(center_arg, nb_size)
 
-                nodes[nbs_args] += eta * (p - nodes[nbs_args])
+                nodes += eta * (p - nodes) * self.get_neighbors(center_arg, nb_size)
 
         self.nodes = nodes
 
@@ -56,10 +56,11 @@ if __name__ == "__main__":
 
     num_nodes = 100
 
+    indexing = np.arange(num_nodes)[:,np.newaxis]
+
     def get_neighbors_linear(center, nb_size):
-        low = max(center - nb_size,0)
-        high = min(center + nb_size, num_nodes-1)
-        return np.arange(low, high+1)
+        
+        return rbf_kernel(indexing, [center], gamma=(1/nb_size**2))
 
     som = SOM(num_nodes, get_neighbors_linear, lambda ep: (20 - ep) + 5)
 

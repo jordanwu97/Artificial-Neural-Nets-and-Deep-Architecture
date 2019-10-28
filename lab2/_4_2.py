@@ -11,9 +11,9 @@ def loadCities():
         return rows
 
 def getFinalLen(points):
-    print (points)
+    # print (points)
     points_shift = np.array(points)[np.arange(1,len(points) + 1) % len(points)]
-    print (points_shift)
+    # print (points_shift)
     pw = pairwise_distances(np.array(points), points_shift)
     return np.sum(np.diag(pw))
 
@@ -32,22 +32,32 @@ if __name__ == "__main__":
             return 1
         return 0
 
+    indexing = np.arange(num_nodes)
+
     def circular_neighbor(center, neighborhood):
-        low = center - neighborhood
-        high = center + neighborhood
-        return np.mod(np.arange(low, high+1), num_nodes)
+        ids = np.arange(center - neighborhood, center + neighborhood+1) % num_nodes
+        s = np.zeros((num_nodes,1))
+        s[ids.astype(int)] = 1
+        return s
 
-    som = SOM(num_nodes, circular_neighbor, neighbor_size)
+    orders = []
+    dists = []
 
-    for _ in range(10):
+    for _ in range(20):
+        som = SOM(num_nodes, circular_neighbor, neighbor_size)
         som.train(datapoints, num_epochs)
         order = som.showMap(datapoints, labels)
+        
 
-        plt.plot(datapoints.T[0], datapoints.T[1], "ro")
-        plt.plot(datapoints[order].T[0], datapoints[order].T[1], "--")
-        for i, point in enumerate(datapoints[order]):
-            plt.annotate(i, point)
-        plt.show()
-
-        print (getFinalLen(datapoints[order]))
+        orders.append(order)
+        dists.append(getFinalLen(datapoints[order]))
+    
+    order = orders[np.argmin(dists)]
+    plt.plot(datapoints.T[0], datapoints.T[1], "ro")
+    plt.plot(datapoints[order].T[0], datapoints[order].T[1], "--")
+    for i, point in enumerate(datapoints[order]):
+        plt.annotate(i, point)
+    dist = getFinalLen(datapoints[order])
+    plt.title(f"Best Path ({dist:.5f})")
+    plt.savefig("pictures/4_2_best_path.png", bbox_inches='tight')
     
