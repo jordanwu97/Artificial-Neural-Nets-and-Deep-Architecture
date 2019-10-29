@@ -20,7 +20,10 @@ def repeat2D(A, rep):
 
 class RBF_NET:
     def __init__(self, rbfs_mean, rbfs_variance, activation=lambda x: x):
+
+
         self.rbfs_mean = rbfs_mean if rbfs_mean.ndim > 1 else rbfs_mean[:, np.newaxis]
+
         self.rbfs_variance = rbfs_variance
         self.activation = activation
 
@@ -38,14 +41,19 @@ class RBF_NET:
         """
 
         phi = self.phi(X)
+
+        print (phi.shape)
+
         self.W = np.linalg.inv(phi.T @ phi) @ phi.T @ Y
+
+        print (self.W.shape)
         callback() if callback else None
         return 1
 
     def train_delta_single(self, phi_X, Y_example, eta):
         pred = self.activation(phi_X @ self.W)
         e = (Y_example - pred)
-        delW = (eta * e @ phi_X).T
+        delW = (eta * e.T @ phi_X).T
         self.W += delW
         return np.max(np.abs(delW))
 
@@ -104,14 +112,14 @@ if __name__ == "__main__":
         n.train_batch(X, Y_SIN)
         e = n.mae(X_VAL, Y_SIN_VAL)
         if len(thresholds) and e < max(thresholds):
-            print(max(thresholds), "&", e, "&", hidden_num, "\\\\")
+            print(max(thresholds), "&", f"{e:.6f}", "&", hidden_num, "\\\\")
             thresholds.remove(max(thresholds))
 
-        plt.plot(X, n.predict(X))
-        plt.show(block=False)
-        plt.title(hidden_num)
-        plt.pause(.1)
-        plt.clf()
+        # plt.plot(X, n.predict(X))
+        # plt.show(block=False)
+        # plt.title(hidden_num)
+        # plt.pause(.1)
+        # plt.clf()
 
 
     thresholds = set([0.1, 0.01, 0.001])
@@ -124,14 +132,14 @@ if __name__ == "__main__":
         n.train_batch(X, Y_SQUARE)
         e = n.mae(X_VAL, Y_SQUARE_VAL)
         if len(thresholds) and e < max(thresholds):
-            print(max(thresholds), "&", e, "&", hidden_num, "\\\\")
+            print(max(thresholds), "&", f"{e:.6f}", "&", hidden_num, "\\\\")
             thresholds.remove(max(thresholds))
     
-        plt.plot(X, n.predict(X))
-        plt.show(block=False)
-        plt.title(hidden_num)
-        plt.pause(.1)
-        plt.clf()
+        # plt.plot(X, n.predict(X))
+        # plt.show(block=False)
+        # plt.title(hidden_num)
+        # plt.pause(.1)
+        # plt.clf()
 
 
     thresholds = set([0.1, 0.01, 0.001])

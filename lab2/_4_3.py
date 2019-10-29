@@ -37,7 +37,7 @@ if __name__ == "__main__":
     names, dist, party, sex, votes = loadVoting()
 
     nodes_shape = 10, 10
-    num_epochs = 50
+    num_epochs = 100
 
     def neighbor_size(ep):
         if ep < (num_epochs * 1/3):
@@ -50,9 +50,6 @@ if __name__ == "__main__":
 
     def neigh_func(center, neighborhood):
         center_v = neighborhoodmap[center]
-        # dist_mat = np.linalg.norm(neighborhoodmap - center_v, axis=2)
-        # args = np.where(dist_mat <= neighborhood)
-        # print (center)
         out = rbf_kernel(neighborhoodmap, center_v, gamma=1/((neighborhood)**2))
 
         return out
@@ -61,7 +58,6 @@ if __name__ == "__main__":
     som.train(votes, num_epochs)
     ok = som.showMap(votes, party)
 
-    # print (som.map)
 
     partymapping = [ [] for _ in range(100) ]
 

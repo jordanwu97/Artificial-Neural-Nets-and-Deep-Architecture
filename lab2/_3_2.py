@@ -185,14 +185,13 @@ if __name__ == "__main__":
         N = len(X)
         n = MLPRegressor(
             hidden_layer_sizes=(10,),
-            random_state=1,
             activation="logistic",
-            solver="sgd",
+            solver="lbfgs",
             learning_rate_init=0.1,
             batch_size=N,
             max_iter=1000,
         )
-        n.fit(X.reshape(-1, 1), y)
+        n.fit(X.reshape(-1, 1), y.flatten())
         pred = n.predict(X_VAL.reshape(-1, 1))
         mse = mean_squared_error(y_val, pred)
         plt.plot(X_VAL, pred, label=f"MLP (10 Hidden) ({name}) mse={mse:.6f}")
@@ -210,4 +209,4 @@ if __name__ == "__main__":
 
     plt.title("Regressor Performance\n")
     plt.legend()
-    plt.savefig("pictures/rbf_vs_mlp.png", bbox_inches='tight')
+    plt.savefig("pictures/3_2_rbf_vs_mlp.png", bbox_inches='tight')

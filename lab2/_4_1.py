@@ -2,6 +2,7 @@ import numpy as np
 import re
 from sklearn.metrics import pairwise_distances_argmin, pairwise_distances
 from sklearn.metrics.pairwise import rbf_kernel
+import matplotlib.pyplot as plt
 
 def loadAnimalData():
     with open("data/animalnames.txt") as f:
@@ -66,4 +67,17 @@ if __name__ == "__main__":
 
     som.train(datapoints)
     
-    print (som.showMap(datapoints, names))
+    order = som.showMap(datapoints, names)
+
+    print (len(order))
+
+    # plt.xticks(np.arange(len(order)), order)
+    plt.plot(range(len(order)), range(len(order)), "o")
+    for i, animal in enumerate(order):
+        plt.annotate(animal, (i,i))
+    plt.show()
+
+
+
+    # plt.plot(np.arange(num_nodes), np.zeros((num_nodes,)), "o")
+    # plt.show()
