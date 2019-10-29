@@ -1,4 +1,5 @@
 from _3_1 import *
+import matplotlib.markers as markers
 
 from sklearn.metrics.pairwise import rbf_kernel
 
@@ -71,8 +72,8 @@ def shared_winner():
     n = RBF_NET(rbfs_mean, rbfs_variance)
     n.W = np.random.sample(shape) -0.5
 
-    #print("starting pos ", np.sort(rbfs_mean))
-    print("starting pos ", rbfs_mean)
+    print("starting pos ", np.sort(rbfs_mean))
+    #print("starting pos ", rbfs_mean)
 
     update_loss = []
 
@@ -161,8 +162,8 @@ def ballistic():
 
     plot = True
     if (plot):
-        plt.plot(rbfs_mean[:,0], rbfs_mean[:,1], "x")
-        plt.plot(X[:,0], X[:,1], "o")
+        plt.plot(X[:,0], X[:,1], "o", color="orange")
+        plt.plot(rbfs_mean[:, 0], rbfs_mean[:, 1], "x", color="blue")
         #plt.plot(Y[:,0], Y[:,1], "s")
         plt.show(block=False)
         plt.title("rbf_distribution")
@@ -176,13 +177,12 @@ def ballistic():
     n.train_batch(X,Y)
     print(n.mae(X_test, Y_test))
 
-    # vis = np.arange(0,1,0.01)
-    # X_vis = np.zeros((vis.shape[0],2))
-    # X_vis[:,0] = vis[:]
-    # X_vis[:,1] = 0.45
-    # # for i in range(vis.shape[0]):
-    # #     X_vis[i,0] = vis[i]
-    # #     X_vis[i,1] = 0.45
+    vis = np.arange(0,1,0.01)
+    X_vis = np.zeros((vis.shape[0],2))
+    X_vis[:, 0] = vis[:]
+    X_vis[:, 1] = 0.8
+    Y_vis= n.predict(X_vis)
+    furtherst = np.argmax(Y[:,0])
 
 
     Y_test_pred= n.predict(X_test)
@@ -190,31 +190,34 @@ def ballistic():
 
     plot = True
     if (plot):
- #       plt.plot(X_vis[:,0], X_vis[:,1], "o")
-        plt.plot(Y_test_pred[10:20,0], Y_test_pred[10:20,1], "o")
-        plt.plot(Y_test[10:20,0], Y_test[10:20,1], ".")
+        plt.plot(Y_vis[:,0], Y_vis[:,1], "o")
+        plt.xlabel("distance")
+        plt.ylabel("height")
+        #plt.plot(Y_test_pred[:20,0], Y_test_pred[:20,1], "o", label="prediction")
+        #plt.plot(Y_test[:20,0], Y_test[:20,1], ".", label="actual data")
+        plt.legend()
         plt.show(block=False)
-        plt.title("Prediction for different angels")
+        #plt.title("Prediction for test data")
+        plt.title("Prediction for different angles")
         plt.show()
         plt.clf()
 
+def plot_endvalues():
+    pos_1 = [0.46919699, 1.24175863, 1.94175953, 2.52098496, 2.96108921, 3.38483988, 3.87803621, 4.40677224, 4.98049918, 5.58052388, 6.06320906]
+    pos_2 = [0.55873653, 1.14425698, 1.67399974, 2.18035987, 2.67162994, 3.15776469, 3.64967936, 4.1527186, 4.67934174, 5.23261839, 5.83893725]
+
+    plt.plot(pos_1, np.zeros(11), "|", color="green", label="one_winning")
+    plt.plot(pos_2, np.zeros(11)+0.1, "|", color="red", label="shared_winning")
+    plt.plot(pos_1, np.zeros(11)-0.005, "-", color="green")
+    plt.plot(pos_2, np.zeros(11)+0.105, "-", color="red")
+    plt.plot(7, 0.5, ".", color="white") #for alibi
+    plt.axis(xlim=(-0.1, 7), ylim=(0, 1))
+    plt.show(block=False)
+    plt.title("rbf_distribution")
+    plt.legend()
+    plt.show()
+    plt.clf()
 
 if __name__ == "__main__":
     ballistic()
 
-
-
-
-
-
-#Y = np.arange(20)
-#X = np.arange(10)
-
-#var = 3
-
-#n = RBF_NET(Y, 3, sign)
-
-#phi = n.phi(X)
-
-#phi2 = rbf_kernel(X.reshape(-1,1), Y.reshape(-1,1), gamma=1/(2*var**2))
-#print (np.allclose(phi2,phi))

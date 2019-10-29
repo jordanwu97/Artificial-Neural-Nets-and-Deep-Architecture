@@ -1,0 +1,30 @@
+winner takes all:
+we can see convergence due to the updatesum is getting lower each epoch.
+the rbfs distribute themselves nearly equally over the available area from 0-2*pi
+We can see some rbfs getting more updates then others, but none can be considered as dead nodes.
+
+starting pos  [0.45275826 0.91650815 1.96890533 2.78578728 2.84874872 2.99514455
+ 3.77372209 3.81399132 4.10795838 5.93206487 6.23534166]
+end pos  [0.46919699 1.24175863 1.94175953 2.52098496 2.96108921 3.38483988
+ 3.87803621 4.40677224 4.98049918 5.58052388 6.06320906]
+num of winning  [ 97.  76. 124. 141. 115. 144. 146.  86.  65.  93. 173.]
+max_dist  0.7725616415120349
+min_dist  0.4237506633293062
+mean_dist  0.5594012069884555
+
+
+
+
+shared winner
+also convergence to similar end values compared to first approach. However the rbfs are in a closer span.
+
+starting pos  [0.31293285 0.54915476 1.69904771 1.82622257 2.75023879 2.82964423
+ 3.00486239 3.62481385 4.24738657 4.47482191 5.60126718]
+end pos  [0.55873653 1.14425698 1.67399974 2.18035987 2.67162994 3.15776469
+ 3.64967936 4.1527186  4.67934174 5.23261839 5.83893725]
+max_dist  0.6063188651047486
+min_dist  0.48613474764363085
+mean_dist  0.5280200719873115
+
+ballistic:
+best angle for furtherst travel 44 ->  40 degrees
